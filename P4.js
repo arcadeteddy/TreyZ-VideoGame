@@ -5,25 +5,36 @@ THREE.Object3D.prototype.setMatrix = function(a) {
 }
 
 // SETUP PHYSICS
-Physijs.scripts.worker = 'physijs_worker.js';
+Physijs.scripts.worker = 'js/physijs_worker.js';
 Physijs.scripts.ammo = 'ammo.js';
-
-var initScene, render,
-		ground_material, car_material, wheel_material, wheel_geometry,
-		loader, renderer, render_stats, physics_stats, scene, ground_geometry, ground, light, camera,
-		car = {};
+var initScene, update;
 
 // SETUP RENDERER
 var canvas = document.getElementById('canvas');
-var renderer = new THREE.WebGLRenderer();
-	renderer.shadowMap = true;
+var renderer = new THREE.WebGLRenderer({ antialias: true });
+	renderer.setSize( window.innerWidth, window.innerHeight );
+	renderer.shadowMapEnabled = true;
 	renderer.shadowMapSoft = true;
 renderer.setClearColor(0x000000); 
 canvas.appendChild(renderer.domElement);
 
+var render_stats = new Stats();
+render_stats.domElement.style.position = 'absolute';
+render_stats.domElement.style.top = '0px';
+render_stats.domElement.style.right = '0px';
+render_stats.domElement.style.zIndex = 100;
+document.getElementById( 'canvas' ).appendChild( render_stats.domElement );
+
+var physics_stats = new Stats();
+physics_stats.domElement.style.position = 'absolute';
+physics_stats.domElement.style.top = '50px';
+physics_stats.domElement.style.right = '0px';
+physics_stats.domElement.style.zIndex = 100;
+document.getElementById( 'canvas' ).appendChild( physics_stats.domElement );
+
 // SETUP SCENE
 var scene = new Physijs.Scene();
-scene.setGravity(new THREE.Vector3( 0, -30, 0 ));
+scene.setGravity(new THREE.Vector3( 0, -100, 0 ));
 scene.addEventListener(
 	'update',
 	function() {
@@ -33,8 +44,8 @@ scene.addEventListener(
 );
 
 // SETUP CAMERA
-var camera = new THREE.PerspectiveCamera(30,1,0.1,1000); 
-camera.position.set(45,20,40);
+var camera = new THREE.PerspectiveCamera(30,1,0.1,5000); 
+camera.position.set(500,300,500);
 camera.lookAt(scene.position);
 scene.add(camera);
 
@@ -53,7 +64,7 @@ window.addEventListener('resize',resize);
 resize();
 
 //SCROLLBAR FUNCTION DISABLE
-window.onscroll = function () {
+window.onscroll = function() {
     window.scrollTo(0,0);
 }
 
@@ -72,9 +83,48 @@ var gridMaterial = new THREE.LineBasicMaterial({color:0xBBBBBB});
 var grid = new THREE.Line(gridGeometry,gridMaterial,THREE.LinePieces);
 
 // GROUND + STADIUM
-window.onload = function initScene() {
-	
-}
+initScene = function() {
+	// Light
+	var light = new THREE.DirectionalLight( 0xFFFFFF );
+	light.position.set( 20, 150, -50 );
+	light.target.position.copy( scene.position );
+	light.castShadow = true;
+	light.shadowCameraLeft = -60;
+	light.shadowCameraTop = -60;
+	light.shadowCameraRight = 60;
+	light.shadowCameraBottom = 60;
+	light.shadowCameraNear = 20;
+	light.shadowCameraFar = 200;
+	light.shadowBias = -.0001
+	light.shadowMapWidth = light.shadowMapHeight = 2048;
+	light.shadowDarkness = .8;
+	scene.add( light );
+
+	// Materials
+	var court_inside_material = Physijs.createMaterial(new THREE.MeshPhongMaterial({ map: THREE.ImageUtils.loadTexture( "images/floor.png" ) }), 1, 0.5 );
+	var court_outside_material = Physijs.createMaterial(new THREE.MeshLambertMaterial({ color: 0x543233 }));
+		
+	// Environment
+	var court_inside = new Physijs.BoxMesh( new THREE.BoxGeometry(1400, 5, 750), court_inside_material, 0 ); // Geometry, Material, Mass
+	var court_outside = new Physijs.BoxMesh( new THREE.BoxGeometry(1500, 1, 850), court_outside_material, 0 ); // Geometry, Material, Mass
+	court_inside.castShadow = true;
+	court_inside.receiveShadow = true;
+	court_outside.receiveShadow = true; 
+	court_inside.position.y = 2.5;
+	scene.add( court_inside );
+	scene.add( court_outside );
+
+	// Ball
+	var ball_material = Physijs.createMaterial(new THREE.MeshPhongMaterial({ map: THREE.ImageUtils.loadTexture( "images/basketball.jpg" ) }), 1, 2.5 );
+	var ball = new Physijs.SphereMesh( new THREE.SphereGeometry(12.5, 64, 64), ball_material, 500 );
+	ball.castShadow = true;
+	ball.receiveShadow = true;
+	ball.position.y = 100;
+	scene.add( ball );
+		
+	requestAnimationFrame( update );
+	scene.simulate();
+};
 
 // LISTEN TO KEYBOARD
 var key; var keyboard = new THREEx.KeyboardState();
@@ -87,9 +137,10 @@ keyboard.domElement.addEventListener('keydown',function(event){
 });
 
 // SETUP UPDATE CALL-BACK
-function update() {
-    requestAnimationFrame(update);
-    renderer.render(scene,camera);
-}
+update = function() {
+    requestAnimationFrame( update );
+    renderer.render( scene, camera );
+    render_stats.update();
+};
 
-update();
+window.onload = initScene;
