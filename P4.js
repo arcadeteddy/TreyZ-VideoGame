@@ -111,7 +111,7 @@ initScene = function() {
 	court_inside.receiveShadow = true;
 	court_outside.receiveShadow = true; 
 	court_inside.position.y = 2.5;
-	scene.add( court_inside );
+		scene.add( court_inside );
 	scene.add( court_outside );
 
 	// Ball
@@ -121,6 +121,26 @@ initScene = function() {
 	ball.receiveShadow = true;
 	ball.position.y = 100;
 	scene.add( ball );
+	
+	//  Player hand
+		// Declare hand object
+	var hand = new THREE.Object3D();
+		// Build loader
+	var loader = new THREE.JSONLoader();
+		// Use load method
+	loader.load( 'obj/hand.json', function( geometry, materials ) {
+		// Make callback
+		hand = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ));
+		// Scale hand to correct size
+		hand.scale.multiplyScalar(3);
+		// Position hand in scene
+		hand.position.y += 20;
+		hand.position.x += 20;
+		hand.rotation.y = -Math.PI/2;
+		// Add to scene
+		scene.add(hand);
+
+	});
 		
 	requestAnimationFrame( update );
 	scene.simulate();
