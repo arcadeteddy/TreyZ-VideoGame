@@ -1,8 +1,12 @@
 // ASSIGNMENT-SPECIFIC API EXTENSION
+
+
 THREE.Object3D.prototype.setMatrix = function(a) {
     this.matrix=a;
     this.matrix.decompose(this.position,this.quaternion,this.scale);
 }
+
+
 
 // SETUP PHYSICS
 Physijs.scripts.worker = 'js/physijs_worker.js';
@@ -42,6 +46,15 @@ scene.addEventListener(
 		physics_stats.update();
 	}
 );
+//GLOBAL VARIABLES
+var ball_test;
+var gravity = 0.001;
+var ball_forward = 0;
+var ball_up = 0;
+var ground;
+var shooter = false;
+var b = true;
+var Vfinal = 0;
 
 // SETUP CAMERA
 var camera = new THREE.PerspectiveCamera(30,1,0.1,5000); 
@@ -121,6 +134,13 @@ initScene = function() {
 	ball.receiveShadow = true;
 	ball.position.y = 100;
 	scene.add( ball );
+	var ballz_material = new THREE.MeshBasicMaterial( {color: 0x828224} );
+	var ballz = new THREE.SphereGeometry(12.5, 64, 64);
+	var baller = new THREE.Mesh( ballz, ballz_material );
+	baller.position.y += 12;
+	scene.add( baller );
+	ball_test = baller;
+	ground = baller.position.y;
 	
 	//  Player hand
 		// Declare hand object
@@ -146,6 +166,17 @@ initScene = function() {
 	scene.simulate();
 };
 
+//shooting
+//make sure ball rotates with camera
+function shoot (forceX,angle ){
+	//forceX determined by drag distance
+	//angle determined by angle of ball
+	ball_forward = forceX * Math.cos(angle);
+	ball_up = forceX * Math.sin(angle);
+	shooter = true;
+	Vfinal = -ball_up;
+}
+
 // LISTEN TO KEYBOARD
 var key; var keyboard = new THREEx.KeyboardState();
 var grid_state = false;
@@ -154,13 +185,42 @@ keyboard.domElement.addEventListener('keydown',function(event){
     	grid_state =! grid_state;
         grid_state? scene.add(grid) : scene.remove(grid);
     }
-});
+
+	if(keyboard._onKeyDown(event,"C")){
+		shoot(10,60);
+		//ball_test.translateZ(10);
+	}
+	});
+
+
 
 // SETUP UPDATE CALL-BACK
 update = function() {
     requestAnimationFrame( update );
     renderer.render( scene, camera );
     render_stats.update();
+
+	if (b){
+		shoot(2,60);
+		b = false;
+	}
+	if (shooter) {
+		ball_test.translateX(ball_forward);
+		ball_test.translateY(-ball_up);
+		ball_up = ball_up + gravity * 5;
+		if (ball_up > Vfinal) {
+			shooter = false;
+			ball_forward = 0;
+			ball_up = 0
+		}
+	}
+	//if(ball_test.y > ground - 20){
+	//	ball_up = ball_up + gravity * 5;
+	//}else{
+	//	ball_up = 0;
+	//	ball_forward = 0;
+	//}
+
 };
 
 window.onload = initScene;
