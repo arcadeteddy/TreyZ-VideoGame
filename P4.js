@@ -56,6 +56,7 @@ var b = true;
 var Vfinal = 0;
 var mousedown = false;
 var dragTime;
+var NumOfBounces = 0;
 
 // SETUP CAMERA
 var camera = new THREE.PerspectiveCamera(30,1,0.1,5000); 
@@ -138,7 +139,7 @@ initScene = function() {
 	var ballz_material = new THREE.MeshBasicMaterial( {color: 0x828224} );
 	var ballz = new THREE.SphereGeometry(12.5, 64, 64);
 	var baller = new THREE.Mesh( ballz, ballz_material );
-	baller.position.y += 12;
+	baller.position.y += 16;
 	scene.add( baller );
 	ball_test = baller;
 	ground = baller.position.y;
@@ -184,6 +185,14 @@ function gForce(g){
 	return gravity * g;
 }
 
+function bounceGround(){
+	var bounceUp = -(ball_up * 0.59);
+	ball_up = bounceUp;
+	Vfinal = -ball_up;
+	ball_forward =  (ball_forward * 0.69);
+	NumOfBounces++;
+}
+
 // LISTEN TO KEYBOARD
 var key; var keyboard = new THREEx.KeyboardState();
 var grid_state = false;
@@ -217,10 +226,23 @@ update = function() {
 		//ball_up = (ball_up * 0.96) - gForce(50); //use this line when we have collision detection
 		ball_up = ball_up - gForce(150); //use this line for now so the ball stops
 		ball_forward = ball_forward * 0.998; //exponential decrease
+
+		//if(ball_test.position.y < 15){
+		//	ball_test.position.y += 0.8;
+		//	bounceGround();
+		//}
+
 		if (ball_up < Vfinal) { //just so that the ball stops, have to be changed to collision dection later
+			bounceGround();
+		}
+		//if(Math.abs(ball_up) < 1 || Math.abs(ball_forward) < 1){
+		//	NumOfBounces++;
+		//}
+		if(NumOfBounces >= 15){
 			shooter = false;
 			ball_forward = 0;
 			ball_up = 0
+			NumOfBounces=0;
 		}
 	}
 	if (mousedown && dragTime < 500){
@@ -243,7 +265,8 @@ function onMouseDown(event) {
 function onMouseUp(event) {
 	mousedown = false;
 	if(!shooter){
-	shoot(dragTime * 0.08, deltaY * 5);
+	//shoot(dragTime * 0.08, deltaY * 5); //keep this line
+		shoot(dragTime * 0.08, 45);
 	}
 	deltaX = 0;
 	deltaY = 0;
