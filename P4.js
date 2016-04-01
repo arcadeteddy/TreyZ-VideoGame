@@ -172,7 +172,7 @@ ball_test = baller;
 ground = baller.position.y;
 
 
-//shooting
+//shooting a
 //make sure ball rotates with camera
 function shoot (forceX,angle ){
 	//forceX determined by drag distance
