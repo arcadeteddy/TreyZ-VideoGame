@@ -186,10 +186,10 @@ function gForce(g){
 }
 
 function bounceGround(){
-	var bounceUp = -(ball_up * 0.59);
+	var bounceUp = -(ball_up * (0.69 - 0.002 * NumOfBounces));
 	ball_up = bounceUp;
 	Vfinal = -ball_up;
-	ball_forward =  (ball_forward * 0.69);
+	ball_forward =  (ball_forward * (0.98 - 0.004 * NumOfBounces));
 	NumOfBounces++;
 }
 
@@ -215,11 +215,7 @@ update = function() {
     requestAnimationFrame( update );
     renderer.render( scene, camera );
     render_stats.update();
-//only here to initiate shoot cuz i cant get the Onkeydoen to work
-//	if (b){
-//		shoot(7,70);
-//		b = false;
-//	}
+
 	if (shooter) {
 		ball_test.translateX(ball_forward);
 		ball_test.translateY(ball_up);
@@ -227,21 +223,14 @@ update = function() {
 		ball_up = ball_up - gForce(150); //use this line for now so the ball stops
 		ball_forward = ball_forward * 0.998; //exponential decrease
 
-		//if(ball_test.position.y < 15){
-		//	ball_test.position.y += 0.8;
-		//	bounceGround();
-		//}
-
 		if (ball_up < Vfinal) { //just so that the ball stops, have to be changed to collision dection later
 			bounceGround();
 		}
-		//if(Math.abs(ball_up) < 1 || Math.abs(ball_forward) < 1){
-		//	NumOfBounces++;
-		//}
-		if(NumOfBounces >= 15){
+
+		if(NumOfBounces >= 70){
 			shooter = false;
 			ball_forward = 0;
-			ball_up = 0
+			ball_up = 0;
 			NumOfBounces=0;
 		}
 	}
