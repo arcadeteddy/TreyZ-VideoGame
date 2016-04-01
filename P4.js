@@ -51,12 +51,14 @@ var ball_test;
 var gravity = 0.001;
 var ball_forward = 0;
 var ball_up = 0;
+var ball_angle=0;
 var shooter = false;
 var b = true;
 var Vfinal = 0;
 var mousedown = false;
 var dragTime;
 var NumOfBounces = 0;
+var shootingOn = false; //if false ball wont be shot
 
 // SETUP CAMERA
 var camera = new THREE.PerspectiveCamera(30,1,0.1,5000); 
@@ -131,54 +133,59 @@ initScene = function() {
 
 	// Ball
 	var ball_material = Physijs.createMaterial(new THREE.MeshPhongMaterial({ map: THREE.ImageUtils.loadTexture( "images/basketball.jpg" ) }), 1, 2.5 );
-	var ball = new Physijs.SphereMesh( new THREE.SphereGeometry(12.5, 64, 64), ball_material, 500 );
-	ball.castShadow = true;
-	ball.receiveShadow = true;
-	ball.position.y = 100;
-	scene.add( ball );
-	var ballz_material = new THREE.MeshBasicMaterial( {color: 0x828224} );
-	var ballz = new THREE.SphereGeometry(12.5, 64, 64);
-	var baller = new THREE.Mesh( ballz, ballz_material );
-	baller.position.y += 16;
-	scene.add( baller );
-	ball_test = baller;
-	ground = baller.position.y;
-	
-	//  Player hand
-		// Declare hand object
-	var hand = new THREE.Object3D();
-		// Build loader
-	var loader = new THREE.JSONLoader();
-		// Use load method
-	loader.load( 'obj/hand.json', function( geometry, materials ) {
-		// Make callback
-		hand = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ));
-		// Scale hand to correct size
-		hand.scale.multiplyScalar(3);
-		// Position hand in scene
-		hand.position.y += 20;
-		hand.position.x += 20;
-		hand.rotation.y = -Math.PI/2;
-		// Add to scene
-		scene.add(hand);
+		var ball = new Physijs.SphereMesh( new THREE.SphereGeometry(12.5, 64, 64), ball_material, 500 );
+		ball.castShadow = true;
+		ball.receiveShadow = true;
+		ball.position.y = 100;
+		scene.add( ball );
 
-	});
-		
 	requestAnimationFrame( update );
 	scene.simulate();
 };
+
+var hand = new THREE.Object3D();
+// Build loader
+var loader = new THREE.JSONLoader();
+// Use load method
+loader.load( 'obj/hand.json', function( geometry, materials ) {
+	// Make callback
+	hand = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ));
+	// Scale hand to correct size
+	hand.scale.multiplyScalar(3);
+	// Position hand in scene
+	hand.position.y += 20;
+	hand.position.x -= 20;
+
+	hand.rotation.y = -Math.PI/2;
+	hand.rotation.y = Math.PI/2;
+	// Add to scene
+	scene.add(hand);
+
+});
+
+var ballz_material = new THREE.MeshBasicMaterial( {color: 0x828224} );
+var ballz = new THREE.SphereGeometry(12.5, 64, 64);
+var baller = new THREE.Mesh( ballz, ballz_material );
+baller.position.y += 16;
+scene.add( baller );
+ball_test = baller;
+ground = baller.position.y;
+
 
 //shooting
 //make sure ball rotates with camera
 function shoot (forceX,angle ){
 	//forceX determined by drag distance
 	//angle determined by angle of ball
-	ball_forward = forceX * Math.cos(angle);
-	ball_forward = Math.abs(ball_forward);
-	ball_up = forceX * Math.sin(angle);
-	ball_up = Math.abs(ball_up);
-	shooter = true;
-	Vfinal = -ball_up;
+	if(shootingOn) {
+		ball_forward = forceX * Math.cos(angle);
+		ball_forward = Math.abs(ball_forward);
+		ball_up = forceX * Math.sin(angle);
+		ball_up = Math.abs(ball_up);
+		shooter = true;
+		Vfinal = -ball_up;
+	}
+
 }
 
 function gForce(g){
@@ -194,19 +201,31 @@ function bounceGround(){
 }
 
 // LISTEN TO KEYBOARD
-var key; var keyboard = new THREEx.KeyboardState();
+var keyboard = new THREEx.KeyboardState();
 var grid_state = false;
-keyboard.domElement.addEventListener('keydown',function(event){
-    if(keyboard.eventMatches(event,"Z")){ 
-    	grid_state =! grid_state;
-        grid_state? scene.add(grid) : scene.remove(grid);
-    }
+function onKeyDown(event){
+	if(keyboard.pressed("a"))
+	{
 
-	if(keyboard._onKeyDown(event,"C")){
-		shoot(10,60);
-		//ball_test.translateZ(10);
+		hand.translateX(1);
+		ball_test.translateZ(-1);
 	}
-	});
+
+	if(keyboard.pressed("w") && !shooter)
+	{
+
+		hand.rotateX(-0.1);
+		ball_angle += 0.1;
+	}
+
+	if(keyboard.pressed("q") && !shooter)
+	{
+
+		shootingOn = !shootingOn;
+	}
+
+}
+keyboard.domElement.addEventListener('keydown', onKeyDown );
 
 
 
@@ -217,21 +236,25 @@ update = function() {
     render_stats.update();
 
 	if (shooter) {
+		if(ball_angle >= 0){
+		hand.rotateX(0.1);
+		ball_angle -= 0.1;
+		}
 		ball_test.translateX(ball_forward);
 		ball_test.translateY(ball_up);
-		//ball_up = (ball_up * 0.96) - gForce(50); //use this line when we have collision detection
 		ball_up = ball_up - gForce(150); //use this line for now so the ball stops
 		ball_forward = ball_forward * 0.998; //exponential decrease
 
-		if (ball_up < Vfinal) { //just so that the ball stops, have to be changed to collision dection later
+		if (ball_up <= Vfinal) { //just so that the ball stops, have to be changed to collision dection later
 			bounceGround();
 		}
 
-		if(NumOfBounces >= 70){
+		if(NumOfBounces >= 50){
 			shooter = false;
 			ball_forward = 0;
 			ball_up = 0;
 			NumOfBounces=0;
+			//ball_angle = 0;
 		}
 	}
 	if (mousedown && dragTime < 500){
@@ -255,7 +278,7 @@ function onMouseUp(event) {
 	mousedown = false;
 	if(!shooter){
 	//shoot(dragTime * 0.08, deltaY * 5); //keep this line
-		shoot(dragTime * 0.08, 45);
+		shoot(dragTime * 0.08, ball_angle);
 	}
 	deltaX = 0;
 	deltaY = 0;
