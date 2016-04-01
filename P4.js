@@ -172,9 +172,15 @@ function shoot (forceX,angle ){
 	//forceX determined by drag distance
 	//angle determined by angle of ball
 	ball_forward = forceX * Math.cos(angle);
+	ball_forward = Math.abs(ball_forward);
 	ball_up = forceX * Math.sin(angle);
+	ball_up = Math.abs(ball_up);
 	shooter = true;
 	Vfinal = -ball_up;
+}
+
+function gForce(g){
+	return gravity * g;
 }
 
 // LISTEN TO KEYBOARD
@@ -199,16 +205,18 @@ update = function() {
     requestAnimationFrame( update );
     renderer.render( scene, camera );
     render_stats.update();
-
+//only here to initiate shoot cuz i cant get the Onkeydoen to work
 	if (b){
-		shoot(2,60);
+		shoot(7,70);
 		b = false;
 	}
 	if (shooter) {
 		ball_test.translateX(ball_forward);
-		ball_test.translateY(-ball_up);
-		ball_up = ball_up + gravity * 5;
-		if (ball_up > Vfinal) {
+		ball_test.translateY(ball_up);
+		//ball_up = (ball_up * 0.96) - gForce(50); //use this line when we have collision detection
+		ball_up = ball_up - gForce(150); //use this line for now so the ball stops
+		ball_forward = ball_forward * 0.998; //exponential decrease
+		if (ball_up < Vfinal) { //just so that the ball stops, have to be changed to collision dection later
 			shooter = false;
 			ball_forward = 0;
 			ball_up = 0
