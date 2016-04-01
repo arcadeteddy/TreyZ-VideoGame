@@ -51,10 +51,11 @@ var ball_test;
 var gravity = 0.001;
 var ball_forward = 0;
 var ball_up = 0;
-var ground;
 var shooter = false;
 var b = true;
 var Vfinal = 0;
+var mousedown = false;
+var dragTime;
 
 // SETUP CAMERA
 var camera = new THREE.PerspectiveCamera(30,1,0.1,5000); 
@@ -206,10 +207,10 @@ update = function() {
     renderer.render( scene, camera );
     render_stats.update();
 //only here to initiate shoot cuz i cant get the Onkeydoen to work
-	if (b){
-		shoot(7,70);
-		b = false;
-	}
+//	if (b){
+//		shoot(7,70);
+//		b = false;
+//	}
 	if (shooter) {
 		ball_test.translateX(ball_forward);
 		ball_test.translateY(ball_up);
@@ -222,13 +223,46 @@ update = function() {
 			ball_up = 0
 		}
 	}
-	//if(ball_test.y > ground - 20){
-	//	ball_up = ball_up + gravity * 5;
-	//}else{
-	//	ball_up = 0;
-	//	ball_forward = 0;
-	//}
+	if (mousedown && dragTime < 500){
+		dragTime++;
+	}else{
+		dragTime = 0;
+	}
 
 };
+
+var mouseX = 0;
+var mouseY = 0;
+var deltaX = 0;
+var deltaY = 0;
+function onMouseDown(event) {
+	mousedown = true;
+	mouseX = event.clientX;
+	mouseY = event.clientY;
+}
+function onMouseUp(event) {
+	mousedown = false;
+	if(!shooter){
+	shoot(dragTime * 0.08, deltaY * 5);
+	}
+	deltaX = 0;
+	deltaY = 0;
+}
+function onMouseMove(event) {
+	if (!mousedown) {
+		return;
+	}
+
+	event.preventDefault();
+
+	deltaX = event.clientX - mouseX;
+	deltaY = event.clientY - mouseY;
+	mouseX = event.clientX;
+	mouseY = event.clientY;
+}
+canvas.addEventListener('mousemove', onMouseMove );
+canvas.addEventListener('mousedown', onMouseDown );
+canvas.addEventListener('mouseup', onMouseUp );
+
 
 window.onload = initScene;
