@@ -59,6 +59,8 @@ var mousedown = false;
 var dragTime;
 var NumOfBounces = 0;
 var shootingOn = false; //if false ball wont be shot
+var up_distance = 0;
+var forward_distance = 0;
 
 // SETUP CAMERA
 var camera = new THREE.PerspectiveCamera(30,1,0.1,5000); 
@@ -158,6 +160,8 @@ loader.load( 'obj/hand.json', function( geometry, materials ) {
 
 	hand.rotation.y = -Math.PI/2;
 	hand.rotation.y = Math.PI/2;
+	hand.rotateX(-1);
+	ball_angle += 1;
 	// Add to scene
 	scene.add(hand);
 
@@ -200,6 +204,12 @@ function bounceGround(){
 	NumOfBounces++;
 }
 
+function bounceBack(){
+
+	ball_forward = -(ball_forward * 0.6 + Math.abs(ball_up * 0.4));
+	ball_up = 0.9 * ball_up;
+
+}
 // LISTEN TO KEYBOARD
 var keyboard = new THREEx.KeyboardState();
 var grid_state = false;
@@ -228,7 +238,7 @@ function onKeyDown(event){
 keyboard.domElement.addEventListener('keydown', onKeyDown );
 
 
-
+var upTime = 0;
 // SETUP UPDATE CALL-BACK
 update = function() {
     requestAnimationFrame( update );
@@ -241,12 +251,23 @@ update = function() {
 		ball_angle -= 0.1;
 		}
 		ball_test.translateX(ball_forward);
+		forward_distance += ball_forward;
 		ball_test.translateY(ball_up);
+		up_distance += ball_up;
 		ball_up = ball_up - gForce(150); //use this line for now so the ball stops
 		ball_forward = ball_forward * 0.998; //exponential decrease
 
-		if (ball_up <= Vfinal) { //just so that the ball stops, have to be changed to collision dection later
+		//if (ball_up <= Vfinal) { //just so that the ball stops, have to be changed to collision dection later
+		//	bounceGround();
+		//}
+
+		if(ball_up < 0 && up_distance <= 0){
 			bounceGround();
+		}
+
+		if(forward_distance > 400){
+			forward_distance--;
+			bounceBack();
 		}
 
 		if(NumOfBounces >= 50){
@@ -278,7 +299,7 @@ function onMouseUp(event) {
 	mousedown = false;
 	if(!shooter){
 	//shoot(dragTime * 0.08, deltaY * 5); //keep this line
-		shoot(dragTime * 0.08, ball_angle);
+		shoot(dragTime * 0.15, ball_angle);
 	}
 	deltaX = 0;
 	deltaY = 0;
