@@ -188,6 +188,7 @@ function shoot (forceX,angle ){
 		ball_up = Math.abs(ball_up);
 		shooter = true;
 		Vfinal = -ball_up;
+		ball_angle = 0;
 	}
 
 }
