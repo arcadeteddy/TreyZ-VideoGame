@@ -145,10 +145,15 @@ initScene = function() {
 	scene.simulate();
 };
 
+// Declare objects 
 var hand = new THREE.Object3D();
+var backboard = new THREE.Object3D();
+var backboard2 = new THREE.Object3D();
+
 // Build loader
 var loader = new THREE.JSONLoader();
-// Use load method
+
+// Load hand
 loader.load( 'obj/hand.json', function( geometry, materials ) {
 	// Make callback
 	hand = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ));
@@ -166,6 +171,44 @@ loader.load( 'obj/hand.json', function( geometry, materials ) {
 	scene.add(hand);
 
 });
+
+/*
+// Load ballrack
+loader.load('obj/ballrack.json', function( geometry, materials ) {
+	// Make callback
+	rack0 = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ));
+	// Scale rack to correct size
+	rack0.scale.multiplyScalar(10);
+	// Position rack 
+	rack0.position.y += 20;
+	rack0.position.x -= 20;
+	// Orient rack
+	rack0.rotation.y = -Math.PI/2;
+	rack0.rotation.y = Math.PI/2;
+	// Add to scene
+	scene.add(rack0);
+});
+*/
+
+// Load backboard + net
+loader.load('obj/backboard.json', function( geometry, materials ) {
+	// Make callback
+	backboard = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ));
+	backboard2 = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ));
+	// Scale backboard to correct size
+	backboard.scale.multiplyScalar(5);
+	backboard2.scale.multiplyScalar(5);
+	// Position backboard 
+	backboard.position.x -= 680;
+	backboard2.position.x += 680;
+	// Orient backboard
+	backboard.rotation.y = Math.PI/2;
+	backboard2.rotation.y = -Math.PI/2;
+	// Add to scene
+	scene.add(backboard);
+	scene.add(backboard2);
+});
+
 
 var ballz_material = new THREE.MeshBasicMaterial( {color: 0x828224} );
 var ballz = new THREE.SphereGeometry(12.5, 64, 64);
