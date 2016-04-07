@@ -61,6 +61,7 @@ var NumOfBounces = 0;
 var shootingOn = false; //if false ball wont be shot
 var up_distance = 0;
 var forward_distance = 0;
+var ball_radius=19;
 
 // SETUP CAMERA
 var camera = new THREE.PerspectiveCamera(30,1,0.1,5000); 
@@ -213,6 +214,14 @@ loader.load('obj/ball.json', function( geometry, materials ) {
 	// Position
 	ball.position.y += 25;
 	ball_test = ball;
+//	var helper = new THREE.BoundingBoxHelper(ball, 0xff0000);
+//	helper.update();
+//// If you want a visible bounding box
+//	scene.add(helper);
+//// If you just want the numbers
+//	min = helper.box.min.z;
+//	max = helper.box.max.y;
+
 	// Add to scene
 	scene.add(ball);
 });
@@ -231,6 +240,7 @@ function shoot (forceX,angle ){
 	//forceX determined by drag distance
 	//angle determined by angle of ball
 	if(shootingOn) {
+		forceX = 9.5;//todo////////////
 		ball_forward = forceX * Math.cos(angle);
 		ball_forward = Math.abs(ball_forward);
 		ball_up = forceX * Math.sin(angle);
@@ -259,6 +269,25 @@ function bounceBack(){
 	ball_forward = -(ball_forward * 0.6 + Math.abs(ball_up * 0.4));
 	ball_up = 0.9 * ball_up;
 
+}
+
+function boardCollision(X, Y){
+
+	//alert(X);
+	//alert(Y);
+	//alert(backboard2.position.x);
+	if(Math.abs(X - backboard2.position.x) <= (56 + ball_radius) && (Y + ball_radius >= 173 && Y - ball_radius <=307) ){
+
+		return true;
+	}else{
+		return false;
+	}
+}
+
+function checkCollision(){
+	if(boardCollision(ball_test.position.x, ball_test.position.y)){
+			bounceBack();
+		}
 }
 // LISTEN TO KEYBOARD
 var keyboard = new THREEx.KeyboardState();
@@ -303,27 +332,27 @@ update = function() {
 		ball_test.translateX(ball_forward);
 		//ball_test.rotateZ(ball_forward*0.1);
 		ball_test.position.x += ball_forward;
-		//forward_distance += ball_forward;
+		forward_distance += ball_forward;
 		ball_test.translateY(ball_up);
 		up_distance += ball_up;
 		ball_up = ball_up - gForce(150); //use this line for now so the ball stops
 		ball_forward = ball_forward * 0.998; //exponential decrease
 
-		//if (ball_up <= Vfinal) { //just so that the ball stops, have to be changed to collision dection later
-		//	bounceGround();
-		//}
 
 		if(ball_up < 0 && up_distance <= 0){
 
 			bounceGround();
 		}
+		checkCollision();
+		//if(forward_distance >300){
+		//	var x = ball_test.position.x;
+		//	var y = ball_test.position.y;
+		//	boardCollision(x,y );
+		//}
 
-		if(Math.abs(ball_test.position.x + backboard.position.x) <=75 && (ball_test.position.y >= 192 && ball_test.position.y <=288) ){
-			//alert(ball_test.position.x);
-
-			bounceBack();
-			//alert(ball_test.position.y);
-		}
+		//if(boardCollision(ball_test.position.x, ball_test.position.y)){
+		//	bounceBack();
+		//}
 
 		if(NumOfBounces >= 50){
 			shooter = false;
