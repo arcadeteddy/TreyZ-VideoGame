@@ -133,13 +133,7 @@ initScene = function() {
 		scene.add( court_inside );
 	scene.add( court_outside );
 
-	// Ball
-	var ball_material = Physijs.createMaterial(new THREE.MeshPhongMaterial({ map: THREE.ImageUtils.loadTexture( "images/basketball.jpg" ) }), 1, 2.5 );
-		var ball = new Physijs.SphereMesh( new THREE.SphereGeometry(12.5, 64, 64), ball_material, 500 );
-		ball.castShadow = true;
-		ball.receiveShadow = true;
-		ball.position.y = 100;
-		scene.add( ball );
+	
 
 	requestAnimationFrame( update );
 	scene.simulate();
@@ -149,6 +143,7 @@ initScene = function() {
 var hand = new THREE.Object3D();
 var backboard = new THREE.Object3D();
 var backboard2 = new THREE.Object3D();
+var ball = new THREE.Object3D();
 
 // Build loader
 var loader = new THREE.JSONLoader();
@@ -209,13 +204,24 @@ loader.load('obj/backboard.json', function( geometry, materials ) {
 	scene.add(backboard2);
 });
 
+// Load ball
+loader.load('obj/ball.json', function( geometry, materials ) {
+	// Make callback
+	ball = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ));
+	// Scale ball to correct size
+	ball.scale.multiplyScalar(1/8);
+	// Position
+	ball.position.y += 25;
+	ball_test = ball;
+	// Add to scene
+	scene.add(ball);
+});
 
 var ballz_material = new THREE.MeshBasicMaterial( {color: 0x828224} );
 var ballz = new THREE.SphereGeometry(12.5, 64, 64);
 var baller = new THREE.Mesh( ballz, ballz_material );
 baller.position.y += 16;
-scene.add( baller );
-ball_test = baller;
+// scene.add( baller );
 ground = baller.position.y;
 
 
