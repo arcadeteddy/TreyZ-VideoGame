@@ -15,11 +15,11 @@ var initScene, update;
 
 // SETUP RENDERER
 var canvas = document.getElementById('canvas');
-var renderer = new THREE.WebGLRenderer({ antialias: true });
+var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 	renderer.setSize( window.innerWidth, window.innerHeight );
 	renderer.shadowMapEnabled = true;
 	renderer.shadowMapSoft = true;
-renderer.setClearColor(0x000000); 
+renderer.setClearColor(0xffffff, 0); 
 canvas.appendChild(renderer.domElement);
 
 var render_stats = new Stats();
@@ -168,23 +168,30 @@ loader.load( 'obj/hand.json', function( geometry, materials ) {
 
 });
 
-/*
 // Load ballrack
-loader.load('obj/ballrack.json', function( geometry, materials ) {
+var RACK_SCALE = 10;
+loader.load('obj/rack.json', function( geometry, materials ) {
 	// Make callback
 	rack0 = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ));
+	rack1 = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ));
 	// Scale rack to correct size
-	rack0.scale.multiplyScalar(10);
+	rack0.scale.multiplyScalar(RACK_SCALE);
+	rack1.scale.multiplyScalar(RACK_SCALE);
 	// Position rack 
-	rack0.position.y += 20;
+	rack0.position.y += 10;
 	rack0.position.x -= 20;
+	rack0.position.z -= 100;
+	rack1.position.y += 10;
+	rack1.position.x -= 20;
+	rack1.position.z += 100;
 	// Orient rack
-	rack0.rotation.y = -Math.PI/2;
-	rack0.rotation.y = Math.PI/2;
+	rack0.rotation.y = Math.PI/8;
+	rack1.rotation.y = -Math.PI/8
 	// Add to scene
 	scene.add(rack0);
+	scene.add(rack1);
 });
-*/
+
 
 // Load backboard + net
 loader.load('obj/backboard.json', function( geometry, materials ) {
