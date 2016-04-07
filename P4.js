@@ -301,7 +301,9 @@ update = function() {
 		ball_angle -= 0.1;
 		}
 		ball_test.translateX(ball_forward);
-		forward_distance += ball_forward;
+		//ball_test.rotateZ(ball_forward*0.1);
+		ball_test.position.x += ball_forward;
+		//forward_distance += ball_forward;
 		ball_test.translateY(ball_up);
 		up_distance += ball_up;
 		ball_up = ball_up - gForce(150); //use this line for now so the ball stops
@@ -312,12 +314,15 @@ update = function() {
 		//}
 
 		if(ball_up < 0 && up_distance <= 0){
+
 			bounceGround();
 		}
 
-		if(forward_distance > 400){
-			forward_distance--;
+		if(Math.abs(ball_test.position.x + backboard.position.x) <=75 && (ball_test.position.y >= 192 && ball_test.position.y <=288) ){
+			//alert(ball_test.position.x);
+
 			bounceBack();
+			//alert(ball_test.position.y);
 		}
 
 		if(NumOfBounces >= 50){
@@ -333,6 +338,8 @@ update = function() {
 	}else{
 		dragTime = 0;
 	}
+
+
 
 };
 
