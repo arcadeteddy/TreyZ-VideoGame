@@ -1,51 +1,19 @@
 // ASSIGNMENT-SPECIFIC API EXTENSION
 
-
 THREE.Object3D.prototype.setMatrix = function(a) {
     this.matrix=a;
     this.matrix.decompose(this.position,this.quaternion,this.scale);
 }
 
-
-
-// SETUP PHYSICS
-Physijs.scripts.worker = 'js/physijs_worker.js';
-Physijs.scripts.ammo = 'ammo.js';
-var initScene, update;
-
 // SETUP RENDERER
 var canvas = document.getElementById('canvas');
-var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-	renderer.setSize( window.innerWidth, window.innerHeight );
-	renderer.shadowMapEnabled = true;
-	renderer.shadowMapSoft = true;
-renderer.setClearColor(0xffffff, 0); 
+var scene = new THREE.Scene();
+var renderer = new THREE.WebGLRenderer();
 canvas.appendChild(renderer.domElement);
 
-var render_stats = new Stats();
-render_stats.domElement.style.position = 'absolute';
-render_stats.domElement.style.top = '0px';
-render_stats.domElement.style.right = '0px';
-render_stats.domElement.style.zIndex = 100;
-document.getElementById( 'canvas' ).appendChild( render_stats.domElement );
-
-var physics_stats = new Stats();
-physics_stats.domElement.style.position = 'absolute';
-physics_stats.domElement.style.top = '50px';
-physics_stats.domElement.style.right = '0px';
-physics_stats.domElement.style.zIndex = 100;
-document.getElementById( 'canvas' ).appendChild( physics_stats.domElement );
-
 // SETUP SCENE
-var scene = new Physijs.Scene();
-scene.setGravity(new THREE.Vector3( 0, -100, 0 ));
-scene.addEventListener(
-	'update',
-	function() {
-		scene.simulate( undefined, 2 );
-		physics_stats.update();
-	}
-);
+var scene = new THREE.Scene();
+
 //GLOBAL VARIABLES
 var ball_test;
 var gravity = 0.001;
@@ -123,24 +91,14 @@ initScene = function() {
 	light.shadowDarkness = .8;
 	scene.add( light );
 
-	// Materials
-	var court_inside_material = Physijs.createMaterial(new THREE.MeshPhongMaterial({ map: THREE.ImageUtils.loadTexture( "images/floor.png" ) }), 1, 0.5 );
-	var court_outside_material = Physijs.createMaterial(new THREE.MeshLambertMaterial({ color: 0x543233 }));
-		
-	// Environment
-	var court_inside = new Physijs.BoxMesh( new THREE.BoxGeometry(1400, 5, 750), court_inside_material, 0 ); // Geometry, Material, Mass
-	var court_outside = new Physijs.BoxMesh( new THREE.BoxGeometry(1500, 1, 850), court_outside_material, 0 ); // Geometry, Material, Mass
-	court_inside.castShadow = true;
-	court_inside.receiveShadow = true;
-	court_outside.receiveShadow = true; 
-	court_inside.position.y = 2.5;
-		scene.add( court_inside );
-	scene.add( court_outside );
-
-	
-
 	requestAnimationFrame( update );
-	scene.simulate();
+
+	var floorGeometry = new THREE.PlaneGeometry( 1450, 750, 5 );
+	var floorTexture = THREE.ImageUtils.loadTexture( "images/floor.png" );
+	var floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture } );
+	var floor = new THREE.Mesh( floorGeometry, floorMaterial );
+	scene.add( floor );
+	floor.rotateX(-90 * Math.PI / 180);
 };
 
 // Declare objects 
@@ -396,7 +354,6 @@ var upTime = 0;
 update = function() {
     requestAnimationFrame( update );
     renderer.render( scene, camera );
-    render_stats.update();
 
 	if (shooter) {
 		if(ball_angle >= 0){
