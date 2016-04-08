@@ -287,8 +287,8 @@ function bounceBack(){
 }
 
 function bounceUp(X){
-	ball_forward = -(ball_forward * 0.6 + Math.abs(ball_up * 0.4));
-	ball_up = Math.abs( ball_forward * 0.6 + Math.abs(ball_up)) * 7;
+	ball_forward = -(ball_forward * 0.6 + Math.abs(ball_up * 0.4)) * 0.1;
+	ball_up = Math.abs( ball_forward * 0.6 + Math.abs(ball_up * 0.73));
 	CollidingBoard =true;
 	//alert("UPPPPPPPP");
 	//alert(X);
