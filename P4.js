@@ -61,13 +61,15 @@ var NumOfBounces = 0;
 var shootingOn = false; //if false ball wont be shot
 var up_distance = 0;
 var forward_distance = 0;
-var ball_radius=19;
+var ball_radius=14;
+var CollidingBoard =false;
 
 // SETUP CAMERA
-var camera = new THREE.PerspectiveCamera(30,1,0.1,5000); 
-camera.position.set(500,300,500);
-camera.lookAt(scene.position);
-scene.add(camera);
+// SETUP CAMERA
+
+var camera = new THREE.PerspectiveCamera(60,1,0.1,5000);
+camera.position.set(500,150,1000);
+scene.add( camera );
 
 // SETUP ORBIT CONTROLS OF THE CAMERA
 var controls = new THREE.OrbitControls(camera);
@@ -77,6 +79,7 @@ function resize() {
     renderer.setSize(window.innerWidth,window.innerHeight);
     camera.aspect = window.innerWidth/window.innerHeight;
     camera.updateProjectionMatrix();
+	camera.lookAt(new THREE.Vector3(0,0,-2000));
 }
 
 // EVENT LISTENER RESIZE
@@ -161,8 +164,8 @@ loader.load( 'obj/hand.json', function( geometry, materials ) {
 
 	hand.rotation.y = -Math.PI/2;
 	hand.rotation.y = Math.PI/2;
-	hand.rotateX(-1);
-	ball_angle += 1;
+	hand.rotateX(-1.3);
+	ball_angle += 1.3;
 	// Add to scene
 	scene.add(hand);
 
@@ -186,7 +189,7 @@ loader.load('obj/rack.json', function( geometry, materials ) {
 	rack1.position.z += 100;
 	// Orient rack
 	rack0.rotation.y = Math.PI/8;
-	rack1.rotation.y = -Math.PI/8
+	rack1.rotation.y = -Math.PI/8;
 	// Add to scene
 	scene.add(rack0);
 	scene.add(rack1);
@@ -220,6 +223,11 @@ loader.load('obj/ball.json', function( geometry, materials ) {
 	ball.scale.multiplyScalar(1/8);
 	// Position
 	ball.position.y += 25;
+	//////////
+	//ball.position.y = 275;
+	//ball.position.x = 601;
+
+
 	ball_test = ball;
 //	var helper = new THREE.BoundingBoxHelper(ball, 0xff0000);
 //	helper.update();
@@ -247,7 +255,7 @@ function shoot (forceX,angle ){
 	//forceX determined by drag distance
 	//angle determined by angle of ball
 	if(shootingOn) {
-		forceX = 9.5;//todo////////////
+		forceX = 11.3;//todo////////////force of ball for testing
 		ball_forward = forceX * Math.cos(angle);
 		ball_forward = Math.abs(ball_forward);
 		ball_up = forceX * Math.sin(angle);
@@ -269,13 +277,20 @@ function bounceGround(){
 	Vfinal = -ball_up;
 	ball_forward =  (ball_forward * (0.98 - 0.004 * NumOfBounces));
 	NumOfBounces++;
+	CollidingBoard =false;
 }
 
 function bounceBack(){
-
 	ball_forward = -(ball_forward * 0.6 + Math.abs(ball_up * 0.4));
 	ball_up = 0.9 * ball_up;
+	CollidingBoard =true;
+}
 
+function bounceUp(){
+	ball_forward = -(ball_forward * 0.6 + Math.abs(ball_up * 0.4));
+	ball_up = Math.abs( ball_forward * 0.6 + Math.abs(ball_up)) * 7;
+	CollidingBoard =true;
+	alert("UPPPPPPPP");
 }
 
 function boardCollision(X, Y){
@@ -283,7 +298,27 @@ function boardCollision(X, Y){
 	//alert(X);
 	//alert(Y);
 	//alert(backboard2.position.x);
-	if(Math.abs(X - backboard2.position.x) <= (56 + ball_radius) && (Y + ball_radius >= 173 && Y - ball_radius <=307) ){
+	if(Math.abs(X - 630) <= ball_radius && (Y + ball_radius >= 165 && Y - ball_radius <=275) ){ ///todo//////////
+
+		return true;
+	}else{
+		return false;
+	}
+}
+
+function boardCollision2(X, Y){
+
+	if(X >= 630 && X< 635 && Y <= 275 && Y >= 165 ){ ///todo//////////
+
+		return true;
+	}else{
+		return false;
+	}
+}
+
+function boardCollision3(X, Y){
+
+	if(X >= 630 && X < 635 && Y >= 165 && Y <= 275){ ///todo//////////
 
 		return true;
 	}else{
@@ -292,9 +327,39 @@ function boardCollision(X, Y){
 }
 
 function checkCollision(){
-	if(boardCollision(ball_test.position.x, ball_test.position.y)){
+	var originPoint = ball_test.position.clone();
+	var X = ball_test.position.x;
+	var Y = ball_test.position.y;
+
+	var DxDown = Math.cos(0.78) * ball_radius;
+	var DyDown = Math.sin(0.78) * ball_radius;
+	var DxUp = Math.cos(2.356) * ball_radius;
+	var DyUp = Math.sin(2.356) * ball_radius;
+	var NxUp = Math.cos(3.92) * ball_radius;
+	var NyUp = Math.sin(3.92) * ball_radius;
+	var NxDown = Math.cos(5.45) * ball_radius;
+	var NyDown = Math.sin(5.45) * ball_radius;
+
+	if(CollidingBoard == false) {
+		 if (boardCollision2(X + DxDown, Y + DyDown)) {
+			bounceUp();
+		} else if (boardCollision3(X + DxUp, Y - DyUp)) {
+
+			bounceUp();
+		}else if (boardCollision(X, Y )) {
 			bounceBack();
 		}
+
+		//else if (boardCollision(X + NxUp, Y + NyUp)) {
+		//	bounceGround();
+		//} else if (boardCollision(X + NxDown, Y + NyDown)) {
+		//	bounceGround();
+		//}
+	}
+
+
+	//0.78  2.356   3.92   5.45
+
 }
 // LISTEN TO KEYBOARD
 var keyboard = new THREEx.KeyboardState();
