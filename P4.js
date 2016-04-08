@@ -286,11 +286,12 @@ function bounceBack(){
 	CollidingBoard =true;
 }
 
-function bounceUp(){
+function bounceUp(X){
 	ball_forward = -(ball_forward * 0.6 + Math.abs(ball_up * 0.4));
 	ball_up = Math.abs( ball_forward * 0.6 + Math.abs(ball_up)) * 7;
 	CollidingBoard =true;
-	alert("UPPPPPPPP");
+	//alert("UPPPPPPPP");
+	//alert(X);
 }
 
 function boardCollision(X, Y){
@@ -308,7 +309,7 @@ function boardCollision(X, Y){
 
 function boardCollision2(X, Y){
 
-	if(X >= 630 && X< 635 && Y <= 275 && Y >= 165 ){ ///todo//////////
+	if(X >= 632 && X< 638 && Y <= 300 && Y >= 165 ){ ///todo//////////
 
 		return true;
 	}else{
@@ -318,7 +319,7 @@ function boardCollision2(X, Y){
 
 function boardCollision3(X, Y){
 
-	if(X >= 630 && X < 635 && Y >= 165 && Y <= 275){ ///todo//////////
+	if(X >= 632 && X < 638 && Y >= 165 && Y <= 300){ ///todo//////////
 
 		return true;
 	}else{
@@ -340,12 +341,13 @@ function checkCollision(){
 	var NxDown = Math.cos(5.45) * ball_radius;
 	var NyDown = Math.sin(5.45) * ball_radius;
 
+
 	if(CollidingBoard == false) {
 		 if (boardCollision2(X + DxDown, Y + DyDown)) {
-			bounceUp();
+			bounceUp(X + DxDown);
 		} else if (boardCollision3(X + DxUp, Y - DyUp)) {
 
-			bounceUp();
+			bounceUp(X + DxDown);
 		}else if (boardCollision(X, Y )) {
 			bounceBack();
 		}
