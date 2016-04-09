@@ -261,7 +261,7 @@ function shoot (forceX,angle ){
 	//forceX determined by drag distance
 	//angle determined by angle of ball
 	if(shootingOn) {
-		forceX = 11.3;//todo////////////force of ball for testing
+		//forceX = 11.3;//todo////////////force of ball for testing
 		ball_forward = forceX * Math.cos(angle);
 		ball_forward = Math.abs(ball_forward);
 		ball_up = forceX * Math.sin(angle);
@@ -396,6 +396,16 @@ function onKeyDown(event){
 		shootingOn = !shootingOn;
 	}
 
+	if(keyboard.pressed("z") && !shooter)
+	{
+
+		ball_test.position.x =0;
+		ball_test.position.z =0;
+	}
+
+
+
+
 }
 keyboard.domElement.addEventListener('keydown', onKeyDown );
 
@@ -426,21 +436,14 @@ update = function() {
 			bounceGround();
 		}
 		checkCollision();
-		//if(forward_distance >300){
-		//	var x = ball_test.position.x;
-		//	var y = ball_test.position.y;
-		//	boardCollision(x,y );
-		//}
-
-		//if(boardCollision(ball_test.position.x, ball_test.position.y)){
-		//	bounceBack();
-		//}
 
 		if(NumOfBounces >= 50){
 			shooter = false;
 			ball_forward = 0;
 			ball_up = 0;
 			NumOfBounces=0;
+
+
 			//ball_angle = 0;
 		}
 	}
