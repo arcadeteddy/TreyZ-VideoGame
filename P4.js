@@ -1,41 +1,27 @@
-// ASSIGNMENT-SPECIFIC API EXTENSION
+// =============================================================================
+// -----------------------Project 4 - TreyZ-------------------------------------
+// =============================================================================
 
-THREE.Object3D.prototype.setMatrix = function(a) {
-    this.matrix=a;
-    this.matrix.decompose(this.position,this.quaternion,this.scale);
-}
+// ==========================SCENE LOGIC=========================================
 
-// SETUP RENDERER
+// SETUP CANVAS & RENDERER
 var canvas = document.getElementById('canvas');
 var scene = new THREE.Scene();
 var renderer = new THREE.WebGLRenderer();
+renderer.setClearColor(0xffffff, 0);  // White canvas, comment out for black canvas
+var SCREEN_WIDTH = window.innerWidth;
+var SCREEN_HEIGHT = window.innerHeight;
 canvas.appendChild(renderer.domElement);
 
 // SETUP SCENE
 var scene = new THREE.Scene();
 
-//GLOBAL VARIABLES
-var ball_test;
-var gravity = 0.001;
-var ball_forward = 0;
-var ball_up = 0;
-var ball_angle=0;
-var shooter = false;
-var b = true;
-var Vfinal = 0;
-var mousedown = false;
-var dragTime;
-var NumOfBounces = 0;
-var shootingOn = false; //if false ball wont be shot
-var up_distance = 0;
-var forward_distance = 0;
-var ball_radius=14;
-var CollidingBoard =false;
-
 // SETUP CAMERA
-// SETUP CAMERA
-
-var camera = new THREE.PerspectiveCamera(60,1,0.1,5000);
+var VIEW_ANGLE = 60;
+var ASPECT = 1;
+var NEAR = 0.1;
+var FAR = 5000;
+var camera = new THREE.PerspectiveCamera(VIEW_ANGLE,ASPECT,NEAR,FAR);
 camera.position.set(500,150,1000);
 scene.add( camera );
 
@@ -44,8 +30,8 @@ var controls = new THREE.OrbitControls(camera);
 
 // ADAPT TO WINDOW RESIZE
 function resize() {
-    renderer.setSize(window.innerWidth,window.innerHeight);
-    camera.aspect = window.innerWidth/window.innerHeight;
+    renderer.setSize(SCREEN_WIDTH,SCREEN_HEIGHT);
+    camera.aspect = SCREEN_WIDTH/SCREEN_HEIGHT;
     camera.updateProjectionMatrix();
 	camera.lookAt(new THREE.Vector3(0,0,-2000));
 }
@@ -100,6 +86,25 @@ initScene = function() {
 	scene.add( floor );
 	floor.rotateX(-90 * Math.PI / 180);
 };
+
+// ==================GAME LOGIC===================================================
+//GLOBAL VARIABLES
+var ball_test;
+var gravity = 0.001;
+var ball_forward = 0;
+var ball_up = 0;
+var ball_angle=0;
+var shooter = false;
+var b = true;
+var Vfinal = 0;
+var mousedown = false;
+var dragTime;
+var NumOfBounces = 0;
+var shootingOn = false; //if false ball wont be shot
+var up_distance = 0;
+var forward_distance = 0;
+var ball_radius=14;
+var CollidingBoard =false;
 
 // Declare objects 
 var hand = new THREE.Object3D();
@@ -206,6 +211,7 @@ baller.position.y += 16;
 // scene.add( baller );
 ground = baller.position.y;
 
+//====================== PHYSICS =========================================
 
 //shooting a
 //make sure ball rotates with camera
@@ -321,6 +327,9 @@ function checkCollision(){
 	//0.78  2.356   3.92   5.45
 
 }
+
+//====================== Player controls =========================================
+
 // LISTEN TO KEYBOARD
 var keyboard = new THREEx.KeyboardState();
 var grid_state = false;
@@ -348,7 +357,7 @@ function onKeyDown(event){
 }
 keyboard.domElement.addEventListener('keydown', onKeyDown );
 
-
+//====================== ANIMATE =========================================
 var upTime = 0;
 // SETUP UPDATE CALL-BACK
 update = function() {
@@ -402,6 +411,8 @@ update = function() {
 
 
 };
+
+//====================== Mouse controls =========================================
 
 var mouseX = 0;
 var mouseY = 0;
