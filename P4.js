@@ -261,7 +261,7 @@ function shoot (forceX,angle ){
 	//forceX determined by drag distance
 	//angle determined by angle of ball
 	if(shootingOn) {
-		//forceX = 11.3;//todo////////////force of ball for testing
+		forceX = 11.3;//todo////////////force of ball for testing
 		ball_forward = forceX * Math.cos(angle);
 		ball_forward = Math.abs(ball_forward);
 		ball_up = forceX * Math.sin(angle);
@@ -289,13 +289,13 @@ function bounceGround(){
 function bounceBack(){
 	ball_forward = -(ball_forward * 0.6 + Math.abs(ball_up * 0.4));
 	ball_up = 0.9 * ball_up;
-	CollidingBoard =true;
+	//CollidingBoard =true;
 }
 
 function bounceUp(X){
 	ball_forward = -(ball_forward * 0.6 + Math.abs(ball_up * 0.4)) * 0.1;
 	ball_up = Math.abs( ball_forward * 0.6 + Math.abs(ball_up * 0.73));
-	CollidingBoard =true;
+	//CollidingBoard =true;
 	//alert("UPPPPPPPP");
 	//alert(X);
 }
@@ -351,11 +351,14 @@ function checkCollision(){
 	if(CollidingBoard == false) {
 		 if (boardCollision2(X + DxDown, Y + DyDown)) {
 			bounceUp(X + DxDown);
+			 CollidingBoard =true;
 		} else if (boardCollision3(X + DxUp, Y - DyUp)) {
 
 			bounceUp(X + DxDown);
+			 CollidingBoard =true;
 		}else if (boardCollision(X, Y )) {
 			bounceBack();
+			 CollidingBoard =true;
 		}
 
 		//else if (boardCollision(X + NxUp, Y + NyUp)) {
