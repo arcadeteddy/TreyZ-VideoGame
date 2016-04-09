@@ -106,11 +106,15 @@ var forward_distance = 0;
 var ball_radius=14;
 var CollidingBoard =false;
 
-// Declare objects 
+// Declare Stage objects 
 var hand = new THREE.Object3D();
 var backboard = new THREE.Object3D();
 var backboard2 = new THREE.Object3D();
 var ball = new THREE.Object3D();
+
+// Declare background objects
+var bench = new THREE.Object3D();
+
 
 // Build loader
 var loader = new THREE.JSONLoader();
@@ -176,6 +180,44 @@ loader.load('obj/backboard.json', function( geometry, materials ) {
 	// Add to scene
 	scene.add(backboard);
 	scene.add(backboard2);
+});
+
+// Load bench
+loader.load( 'obj/bench-tex.json', function( geometry, materials ) {
+	// Make callback
+	var benches = [];
+	// background benches
+	bench = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ));
+	var bench2 = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ));
+	var bench3 = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ));
+	// Foreground benches
+	var bench4 = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ));
+	var bench5 = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ));
+	var bench6 = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ));
+	benches.push(bench, bench2, bench3, bench4, bench5, bench6);
+	
+	// Scale bench to correct size
+	var b;
+	for(b = 0; b < benches.length; b++) {
+		benches[b].scale.multiplyScalar(10);
+		benches[b].position.y += 31;
+		benches[b].rotation.y = -Math.PI/2;
+		if (b < benches.length/2) { benches[b].position.z -= 350 } else { benches[b].position.z += 350;}
+	}
+	// Position bench in scene
+	bench.position.x += 100;
+	bench2.position.x += 350;
+	bench3.position.x += 600;
+	
+	bench4.position.x += 100;
+	bench5.position.x += 350;
+	bench6.position.x += 600;
+	
+	// Add to scene
+	for(b = 0; b < benches.length; b++) {
+		scene.add(benches[b]);
+	}
+
 });
 
 // Load ball
