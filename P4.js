@@ -292,6 +292,12 @@ function bounceBack(){
 	//CollidingBoard =true;
 }
 
+function bounceCeiling(){
+	ball_forward = (ball_forward * 0.6 + Math.abs(ball_up * 0.4));
+	ball_up = -0.7 * ball_up;
+	//CollidingBoard =true;
+}
+
 function bounceUp(X){
 	ball_forward = -(ball_forward * 0.6 + Math.abs(ball_up * 0.4)) * 0.1;
 	ball_up = Math.abs( ball_forward * 0.6 + Math.abs(ball_up * 0.73));
