@@ -208,6 +208,10 @@ var score = 0;
 var scored =false;
 var MAX_SCORE = 25;
 var shotsTaken = 0;
+var camRight =0;
+var camUp = 0;
+var maxVert = 10;
+var maxHor = 25;
 
 // Declare Stage objects 
 var hand = new THREE.Object3D();
@@ -640,6 +644,13 @@ function onKeyDown(event){
 		ball_test.translateZ(-1);
 	}
 
+	if(keyboard.pressed("s") && !shooter)
+	{
+
+		hand.rotateX(0.1);
+		ball_angle += -0.1;
+	}
+
 	if(keyboard.pressed("w") && !shooter)
 	{
 
@@ -689,6 +700,26 @@ function onKeyDown(event){
 		alert("x is " + baller.position.x + "--------z is " + baller.position.z);
 		//alert("x is " + ball_test.position.x + "--------y is " + ball_test.position.y);
 
+	}
+	if(keyboard.pressed("right") && camRight <= maxHor)
+	{
+		camRight++;
+		camera.rotateY(-0.01);
+	}
+	if(keyboard.pressed("left") &&  camRight >= -maxHor )
+	{
+		camRight--;
+		camera.rotateY(0.01);
+	}
+	if(keyboard.pressed("up") &&  camUp <= maxVert)
+	{
+		camera.rotateX(0.01);
+		camUp++;
+	}
+	if(keyboard.pressed("down") &&  camUp >= -maxVert)
+	{
+		camUp--;
+		camera.rotateX(-0.01);
 	}
 
 
