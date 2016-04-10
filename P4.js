@@ -494,8 +494,7 @@ function checkScore(){
 		if(scored==false) {
 			score++;
 			scored=true;
-			//alert("score!!!");
-			//alert(score);
+			document.getElementById("scores").innerHTML = score + " / " + MAX_SCORE;
 		}
 
 	}
@@ -504,8 +503,7 @@ function checkScore(){
 		if(scored==false) {
 			score++;
 			scored=true;
-			//alert("score!!!");
-			//alert(score);
+			document.getElementById("scores").innerHTML = score + " / " + MAX_SCORE;
 		}
 
 	}
@@ -533,8 +531,7 @@ function checkCollision(){
 	var NyUp = Math.sin(3.92) * ball_radius;
 	var NxDown = Math.cos(5.45) * ball_radius;
 	var NyDown = Math.sin(5.45) * ball_radius;
-	//baller.position.y += 220;
-	//baller.position.x += 583;
+	
 	if(CollidingBoard){
 		if((Y-ball_radius)>=219 && (Y-ball_radius)<=224 &&  X<=575 && X>=569  ){//(X<=588 && 232 238
 			bounceUp();
@@ -547,9 +544,6 @@ function checkCollision(){
 
 		if(CollidingBoard == false) {
 		if((Y-ball_radius)>=230 && (Y-ball_radius)<=235 && (X+ball_radius)<=585 && (X+ball_radius)>=563){
-			//alert(X);
-			//alert(Y);
-			//bounceBack();
 			bounceRim();
 		}
 		 if (boardCollision2(X + DxDown, Y + DyDown)) {
@@ -563,13 +557,6 @@ function checkCollision(){
 			bounceBack();
 			 CollidingBoard = true;
 		}
-
-		//else if (boardCollision(X + NxUp, Y + NyUp)) {
-		//	bounceGround();
-		//} else if (boardCollision(X + NxDown, Y + NyDown)) {
-		//	bounceGround();
-		//}
-
 
 	}
 
