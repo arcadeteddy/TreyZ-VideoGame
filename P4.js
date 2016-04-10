@@ -228,10 +228,6 @@ loader.load('obj/ball.json', function( geometry, materials ) {
 	ball.scale.multiplyScalar(1/8);
 	// Position
 	ball.position.y += 25;
-	//////////
-	//ball.position.y = 275;
-	//ball.position.x = 601;
-
 
 	ball_test = ball;
 //	var helper = new THREE.BoundingBoxHelper(ball, 0xff0000);
@@ -346,7 +342,7 @@ function checkCollision(){
 	var NyUp = Math.sin(3.92) * ball_radius;
 	var NxDown = Math.cos(5.45) * ball_radius;
 	var NyDown = Math.sin(5.45) * ball_radius;
-
+	
 
 	if(CollidingBoard == false) {
 		 if (boardCollision2(X + DxDown, Y + DyDown)) {
@@ -368,6 +364,60 @@ function checkCollision(){
 
 	//0.78  2.356   3.92   5.45
 
+}
+
+//====================== Power Bar ===============================================
+// Setup power bar window
+var powbar_geom = new THREE.BoxGeometry(100, 20, 2);
+var powbar_dim_mat = new THREE.MeshBasicMaterial( {color: 0xb8740a});
+var powbar_lit_mat = new THREE.MeshBasicMaterial( {color: 0xff9e0a});
+var powbar = new THREE.Mesh( powbar_geom, powbar_dim_mat );
+
+var border_geom = new THREE.BoxGeometry(105, 25, 1.5);
+var border_dim_mat = new THREE.MeshBasicMaterial( {color: 0x000000});
+var border_lit_mat = new THREE.MeshBasicMaterial( {color: 0xfdff10});
+var border = new THREE.Mesh( border_geom, border_dim_mat);
+
+var power_indicator_geom = new THREE.BoxGeometry(0.1, 5, 2.5);
+var power_indicator_mat = new THREE.MeshBasicMaterial( {color: 0x37ec27});
+var power_indicator_bad_mat = new THREE.MeshBasicMaterial( {color: 0xdb0b00});
+var power_indicator = new THREE.Mesh( power_indicator_geom, power_indicator_mat);
+
+var gauge_geom = new THREE.BoxGeometry(80, 5, 2.3);
+var gauge_mat = new THREE.MeshBasicMaterial( {color: 0x7c5100});
+var gauge = new THREE.Mesh( gauge_geom, gauge_mat );
+powbar.add(border);
+powbar.add(power_indicator);
+powbar.add(gauge);
+scene.add(powbar);
+camera.add(powbar);
+
+// Orient power bar in window
+powbar.translateX(-22);
+powbar.translateY(105);
+powbar.translateZ(-200);
+
+// Update power bar
+var incrementer = 1;
+function managePowerbar() {
+	if (shootingOn) {
+		powbar.material = powbar_lit_mat;
+		border.material = border_lit_mat;
+	} else {
+		powbar.material = powbar_dim_mat;
+		border.material = border_dim_mat;
+	}
+	
+	if (incrementer > 800) {
+		power_indicator.material = power_indicator_bad_mat;
+	} else {
+		power_indicator.material = power_indicator_mat;
+	}
+	
+	if (incrementer >= 1000) {
+		incrementer = 1000;
+	}
+	power_indicator.scale.setX(incrementer);
 }
 
 //====================== Player controls =========================================
@@ -415,7 +465,9 @@ var upTime = 0;
 update = function() {
     requestAnimationFrame( update );
     renderer.render( scene, camera );
-
+	
+	managePowerbar();
+	
 	if (shooter) {
 		if(ball_angle >= 0){
 		hand.rotateX(0.1);
@@ -447,8 +499,11 @@ update = function() {
 			//ball_angle = 0;
 		}
 	}
-	if (mousedown && dragTime < 500){
+	if (mousedown && dragTime < 500) {
 		dragTime++;
+		if (shootingOn) {
+		incrementer+= 10.95;
+		}
 	}else{
 		dragTime = 0;
 	}
