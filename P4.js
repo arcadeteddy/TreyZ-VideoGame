@@ -66,14 +66,14 @@ initScene = function() {
     scene.add( ambientLight );
 	
 	// create a point light 
-	pointLight = new THREE.PointLight(0xffc9c9); 
+	pointLight = new THREE.PointLight(0x00b300);
  
 	// set its position 
 	pointLight.position.x = 0; 
 	pointLight.position.y = 150; 
 	pointLight.position.z = 0; 
-	pointLight.intensity = 1.8; 
-	pointLight.distance = 10000; 
+	pointLight.intensity = 7.5;
+	pointLight.distance = 250;
  
 	// add to the scene 
 	scene.add(pointLight); 
@@ -205,7 +205,7 @@ loader.load( 'obj/hand.json', function( geometry, materials ) {
 	// Scale hand to correct size
 	hand.scale.multiplyScalar(3);
 	// Position hand in scene
-	hand.position.y += 20;
+	hand.position.y += 30;
 	hand.position.x -= 20;
 
 	hand.rotation.y = -Math.PI/2;
@@ -326,12 +326,13 @@ loader.load( 'obj/bench-tex.json', function( geometry, materials ) {
 
 // Load ball
 loader.load('obj/ball.json', function( geometry, materials ) {
+
 	// Make callback
 	ball = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ));
 	// Scale ball to correct size
 	ball.scale.multiplyScalar(1/8);
 	// Position
-	ball.position.y += 25;
+	ball.position.y += 35;
 
 	ball_test = ball;
 //	var helper = new THREE.BoundingBoxHelper(ball, 0xff0000);
