@@ -399,7 +399,7 @@ ground = baller.position.y;
 //shooting a
 //make sure ball rotates with camera
 function shoot (forceX,angle ){
-	//forceX determined by drag distance
+	//forceX determined by drag distance.
 	//angle determined by angle of ball
 	if(shootingOn) {
 		 //forceX = 10.9;//todo////////////force of ball for testing
