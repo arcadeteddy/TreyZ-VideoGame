@@ -8,7 +8,7 @@
 var canvas = document.getElementById('canvas');
 var scene = new THREE.Scene();
 var renderer = new THREE.WebGLRenderer();
-renderer.setClearColor(0xffffff, 0);  // White canvas, comment out for black canvas
+renderer.setClearColor(0x9ac2ff, 0);  // White canvas, comment out for black canvas
 var SCREEN_WIDTH = window.innerWidth;
 var SCREEN_HEIGHT = window.innerHeight;
 canvas.appendChild(renderer.domElement);
@@ -22,7 +22,7 @@ var ASPECT = 1;
 var NEAR = 0.1;
 var FAR = 5000;
 var camera = new THREE.PerspectiveCamera(VIEW_ANGLE,ASPECT,NEAR,FAR);
-camera.position.set(500,150,1000);
+camera.position.set(0,250,800);
 scene.add( camera );
 
 // SETUP ORBIT CONTROLS OF THE CAMERA
@@ -33,7 +33,7 @@ function resize() {
     renderer.setSize(SCREEN_WIDTH,SCREEN_HEIGHT);
     camera.aspect = SCREEN_WIDTH/SCREEN_HEIGHT;
     camera.updateProjectionMatrix();
-	camera.lookAt(new THREE.Vector3(0,0,-2000));
+	camera.lookAt(new THREE.Vector3(0,0,0));
 }
 
 // EVENT LISTENER RESIZE
@@ -59,32 +59,94 @@ for(i=-50;i<51;i+=2) {
 var gridMaterial = new THREE.LineBasicMaterial({color:0xBBBBBB});
 var grid = new THREE.Line(gridGeometry,gridMaterial,THREE.LinePieces);
 
-// GROUND + STADIUM
+// ENVIRONMENT
 initScene = function() {
-	// Light
-	var light = new THREE.DirectionalLight( 0xFFFFFF );
-	light.position.set( 20, 150, -50 );
-	light.target.position.copy( scene.position );
-	light.castShadow = true;
-	light.shadowCameraLeft = -60;
-	light.shadowCameraTop = -60;
-	light.shadowCameraRight = 60;
-	light.shadowCameraBottom = 60;
-	light.shadowCameraNear = 20;
-	light.shadowCameraFar = 200;
-	light.shadowBias = -.0001
-	light.shadowMapWidth = light.shadowMapHeight = 2048;
-	light.shadowDarkness = .8;
-	scene.add( light );
+    var ambientLight = new THREE.AmbientLight( 0xAFAFAF );
+    scene.add( ambientLight );
+
+    var spotLight = new THREE.SpotLight( 0xffffee );
+    spotLight.position.set( 0, 1000, 0 );
+
+    spotLight.castShadow = true;
+
+    spotLight.shadowMapWidth = 1024;
+    spotLight.shadowMapHeight = 1024;
+
+    spotLight.shadowCameraNear = 500;
+    spotLight.shadowCameraFar = 4000;
+    spotLight.shadowCameraFov = 30;
+    spotLight.shadowMapVisible = true;
+
+    scene.add( spotLight );
+
+	var floorGeometry = new THREE.BoxGeometry( 1000, 600, 5 );
+	var floorTexture = THREE.ImageUtils.loadTexture( "images/concrete_floor.png" );
+	var floorMaterial = new THREE.MeshPhongMaterial( { map: floorTexture, bumpMap: THREE.ImageUtils.loadTexture('images/concrete_floor_bump.png'), shininess: 1, bumpScale: 2.5 } );
+	var floor = new THREE.Mesh( floorGeometry, floorMaterial );
+	floor.rotateX(-90 * Math.PI / 180); floor.translateY(-300);
+	scene.add( floor );
+	var otherFloorGeometry = new THREE.BoxGeometry( 1000, 400, 5 );
+    var otherFloorTexture = THREE.ImageUtils.loadTexture( "images/other_floor.png" );
+    var otherFloorMaterial = new THREE.MeshPhongMaterial( { map: otherFloorTexture, bumpMap: THREE.ImageUtils.loadTexture('images/concrete_floor_bump.png'), shininess: 1, bumpScale: 2.5 } );
+    var otherFloor = new THREE.Mesh( otherFloorGeometry, otherFloorMaterial );
+    otherFloor.rotateX(-90 * Math.PI / 180); otherFloor.translateY(200);
+    scene.add( otherFloor );
+
+    var buildingGeometry = new THREE.BoxGeometry( 1100, 1100, 1100 );
+    var buildingTexture = THREE.ImageUtils.loadTexture( "images/concrete_side.png" );
+    buildingTexture.wrapS = buildingTexture.wrapT = THREE.RepeatWrapping;
+    buildingTexture.repeat.set( 11, 11 );
+    var buildingBumpTexture = THREE.ImageUtils.loadTexture( "images/concrete_side_bump.png" );
+    buildingBumpTexture.wrapS = buildingBumpTexture.wrapT = THREE.RepeatWrapping;
+    buildingBumpTexture.repeat.set( 11, 11 );
+    buildingBumpTexture.offset.set( 0.1, 0.1 );
+    var buildingMaterial = new THREE.MeshPhongMaterial( {map: buildingTexture, bumpMap: buildingBumpTexture, shininess: 1, bumpScale: 1 } );
+    var building = new THREE.Mesh( buildingGeometry, buildingMaterial );
+    building.translateY(-555); building.translateZ(100);
+    scene.add( building );
+
+    for (var i = 0; i < 3; i++) {
+        var sideGeometry = new THREE.BoxGeometry( 1100, 100, 50 );
+        var sideTexture = THREE.ImageUtils.loadTexture( "images/concrete_side.png" );
+        sideTexture.wrapS = sideTexture.wrapT = THREE.RepeatWrapping;
+        sideTexture.repeat.set( 11, 1 );
+        var sideBumpTexture = THREE.ImageUtils.loadTexture( "images/concrete_side_bump.png" );
+        sideBumpTexture.wrapS = sideBumpTexture.wrapT = THREE.RepeatWrapping;
+        sideBumpTexture.repeat.set( 11, 1 );
+        sideBumpTexture.offset.set( 0.1, 0.1 );
+        var sideMaterial = new THREE.MeshPhongMaterial( {map: sideTexture, bumpMap: sideBumpTexture, shininess: 1, bumpScale: 1 } );
+        var side = new THREE.Mesh( sideGeometry, sideMaterial );
+        side.translateY(25);
+        scene.add( side );
+
+        var sideTopGeometry = new THREE.BoxGeometry( 1100, 20, 60 );
+        var sideTopMaterial = new THREE.MeshPhongMaterial( {color: 0x333333, bumpMap: sideBumpTexture, shininess: 1, bumpScale: 1 } );
+        var sideTop = new THREE.Mesh( sideTopGeometry, sideTopMaterial );
+        sideTop.rotateX(15 * Math.PI / 180); sideTop.translateY(50); sideTop.translateZ(-10);
+        side.add( sideTop );
+
+        var fenceGeometry = new THREE.PlaneGeometry( 1050, 275 );
+        var fenceTexture = THREE.ImageUtils.loadTexture( "images/chain_link.png" );
+        fenceTexture.wrapS = sideTexture.wrapT = THREE.RepeatWrapping;
+        fenceTexture.repeat.set( 4, 1 );
+        var fenceMaterial = new THREE.MeshBasicMaterial( {map: fenceTexture, side: THREE.DoubleSide, transparent: true } );
+        var fence = new THREE.Mesh( fenceGeometry, fenceMaterial );
+        fence.translateY(200);
+        side.add( fence );
+
+        if (i == 0) { side.translateZ(-425); }
+        else if (i == 1) { side.translateX(-525); side.translateZ(100); { side.rotateY(90 * Math.PI / 180); } }
+        else if (i == 2) { side.translateX(525); side.translateZ(100); { side.rotateY(-90 * Math.PI / 180); } }
+    }
+
+    var backgroundGeometry = new THREE.CylinderGeometry( 1000, 1000, 1000, 1000 );
+    var backgroundTexture = THREE.ImageUtils.loadTexture( "images/background.jpg" );
+    var backgroundMaterial = new THREE.MeshBasicMaterial( {map: backgroundTexture, side: THREE.DoubleSide } );
+    var background = new THREE.Mesh( backgroundGeometry, backgroundMaterial );
+    background.translateY(250);
+    scene.add( background );
 
 	requestAnimationFrame( update );
-
-	var floorGeometry = new THREE.PlaneGeometry( 1450, 750, 5 );
-	var floorTexture = THREE.ImageUtils.loadTexture( "images/floor.png" );
-	var floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture } );
-	var floor = new THREE.Mesh( floorGeometry, floorMaterial );
-	scene.add( floor );
-	floor.rotateX(-90 * Math.PI / 180);
 };
 
 // ==================GAME LOGIC===================================================
