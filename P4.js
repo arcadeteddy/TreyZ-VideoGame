@@ -79,13 +79,13 @@ initScene = function() {
 
     scene.add( spotLight );
 
-	var floorGeometry = new THREE.BoxGeometry( 1600, 980, 5 );
+	var floorGeometry = new THREE.BoxGeometry( 1600, 980, 40 );
 	var floorTexture = THREE.ImageUtils.loadTexture( "images/concrete_floor.png" );
 	var floorMaterial = new THREE.MeshPhongMaterial( { map: floorTexture, bumpMap: THREE.ImageUtils.loadTexture('images/concrete_floor_bump.png'), shininess: 1, bumpScale: 2.5 } );
 	var floor = new THREE.Mesh( floorGeometry, floorMaterial );
 	floor.rotateX(-90 * Math.PI / 180);
 	scene.add( floor );
-	var otherFloorGeometry = new THREE.BoxGeometry( 1600, 620, 5 );
+	var otherFloorGeometry = new THREE.BoxGeometry( 1600, 620, 40 );
     var otherFloorTexture = THREE.ImageUtils.loadTexture( "images/other_floor.png" );
     var otherFloorMaterial = new THREE.MeshPhongMaterial( { map: otherFloorTexture, bumpMap: THREE.ImageUtils.loadTexture('images/concrete_floor_bump.png'), shininess: 1, bumpScale: 2.5 } );
     var otherFloor = new THREE.Mesh( otherFloorGeometry, otherFloorMaterial );
@@ -210,10 +210,10 @@ loader.load('obj/rack.json', function( geometry, materials ) {
 	rack0.scale.multiplyScalar(RACK_SCALE);
 	rack1.scale.multiplyScalar(RACK_SCALE);
 	// Position rack 
-	rack0.position.y += 10;
+	rack0.position.y += 20;
 	rack0.position.x -= 20;
 	rack0.position.z -= 100;
-	rack1.position.y += 10;
+	rack1.position.y += 20;
 	rack1.position.x -= 20;
 	rack1.position.z += 100;
 	// Orient rack
@@ -244,42 +244,61 @@ loader.load('obj/backboardcoloured.json', function( geometry, materials ) {
 	scene.add(backboard2);
 });
 
-// Load bench
+// Load Bench
 loader.load( 'obj/bench-tex.json', function( geometry, materials ) {
-	// Make callback
+
+    var woodTexture = THREE.ImageUtils.loadTexture( "images/wood-texture.jpg" );
+    woodTexture.wrapS = woodTexture.wrapT = THREE.RepeatWrapping;
+    woodTexture.repeat.set( 11, 1 );
+    var woodBumpTexture = THREE.ImageUtils.loadTexture( "images/wood-texture.jpg" );
+    woodBumpTexture.wrapS = woodBumpTexture.wrapT = THREE.RepeatWrapping;
+    woodBumpTexture.repeat.set( 1, 1 );
+    woodBumpTexture.offset.set( 0.1, 0.1 );
+    var woodMaterial = new THREE.MeshPhongMaterial( {map: woodTexture, bumpMap: woodBumpTexture, shininess: 1, bumpScale: 5 } );
+
+	// Make Callback
 	var benches = [];
-	// background benches
-	bench = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ));
-	var bench2 = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ));
-	var bench3 = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ));
-	// Foreground benches
-	var bench4 = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ));
-	var bench5 = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ));
-	var bench6 = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ));
-	benches.push(bench, bench2, bench3, bench4, bench5, bench6);
+	var bench1 = new THREE.Mesh( geometry, woodMaterial );
+	var bench2 = new THREE.Mesh( geometry, woodMaterial );
+	var bench3 = new THREE.Mesh( geometry, woodMaterial );
+	var bench4 = new THREE.Mesh( geometry, woodMaterial );
+	var bench5 = new THREE.Mesh( geometry, woodMaterial );
+	var bench6 = new THREE.Mesh( geometry, woodMaterial );
+	var bench7 = new THREE.Mesh( geometry, woodMaterial );
+	var bench8 = new THREE.Mesh( geometry, woodMaterial );
+	var bench9 = new THREE.Mesh( geometry, woodMaterial );
+	var bench10 = new THREE.Mesh( geometry, woodMaterial );
+	var bench11 = new THREE.Mesh( geometry, woodMaterial );
+	var bench12 = new THREE.Mesh( geometry, woodMaterial );
+
+	benches.push(bench1, bench2, bench3, bench4, bench5, bench6, bench7, bench8, bench9, bench10, bench11, bench12);
 	
-	// Scale bench to correct size
+	// Scale Benches
 	var b;
 	for(b = 0; b < benches.length; b++) {
 		benches[b].scale.multiplyScalar(10);
-		benches[b].position.y += 31;
+		benches[b].position.y += 50;
 		benches[b].rotation.y = -Math.PI/2;
-		if (b < benches.length/2) { benches[b].position.z -= 350 } else { benches[b].position.z += 350;}
+		if (b < 6) { benches[b].position.z -= 450 } else { benches[b].position.z += 450 }
 	}
 	// Position bench in scene
-	bench.position.x += 100;
-	bench2.position.x += 350;
-	bench3.position.x += 600;
-	
-	bench4.position.x += 100;
-	bench5.position.x += 350;
-	bench6.position.x += 600;
-	
+	bench1.position.x += 125;
+	bench2.position.x += 375;
+	bench3.position.x += 625;
+	bench4.position.x -= 125;
+	bench5.position.x -= 375;
+	bench6.position.x -= 625;
+	bench7.position.x += 125;
+    bench8.position.x += 375;
+    bench9.position.x += 625;
+    bench10.position.x -= 125;
+    bench11.position.x -= 375;
+    bench12.position.x -= 625;
+
 	// Add to scene
 	for(b = 0; b < benches.length; b++) {
 		scene.add(benches[b]);
 	}
-
 });
 
 // Load ball
