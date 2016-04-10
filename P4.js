@@ -60,6 +60,8 @@ var gridMaterial = new THREE.LineBasicMaterial({color:0xBBBBBB});
 var grid = new THREE.Line(gridGeometry,gridMaterial,THREE.LinePieces);
 
 // ENVIRONMENT
+var big_ball;
+var textMesh;
 initScene = function() {
 
     var ambientLight = new THREE.AmbientLight( 0xAFAFAF );
@@ -114,12 +116,13 @@ initScene = function() {
     var ballMaterial = new THREE.MeshPhongMaterial( { map: ballTexture } );
     ball = new THREE.Mesh( ballGeometry, ballMaterial );
     ball.position.y += 50; ball.rotateX(45 * Math.PI / 180); ball.translateX(-400);
-    otherFloor.add( ball );
+	big_ball = ball;
+    otherFloor.add( big_ball );
 
 
     var material = new THREE.MeshPhongMaterial({ map: ballTexture });
     var textGeom = new THREE.TextGeometry( 'TREYZ!', { font: 'copperplate t', size: 120, weight: 'normal' });
-    var textMesh = new THREE.Mesh( textGeom, material );
+    textMesh = new THREE.Mesh( textGeom, material );
     textMesh.position.set( 0, 0, 20 ); textMesh.rotateX(90 * Math.PI / 180);
     otherFloor.add( textMesh );
 
@@ -204,6 +207,7 @@ var scoreX2 = 600;
 var score = 0;
 var scored =false;
 var MAX_SCORE = 25;
+var shotsTaken = 0;
 
 // Declare Stage objects 
 var hand = new THREE.Object3D();
@@ -438,8 +442,6 @@ function bounceUp(X){
 	ball_forward = -(ball_forward * 0.6 + Math.abs(ball_up * 0.4)) * 0.1;
 	ball_up = Math.abs( ball_forward * 0.6 + Math.abs(ball_up * 0.73));
 	//CollidingBoard =true;
-	//alert("UPPPPPPPP");
-	//alert(X);
 }
 
 function boardCollision(X, Y){
@@ -502,8 +504,12 @@ function checkScore(){
 
 	}
 
-	if(score >= MAX_SCORE) {
-		alert("YOU WIN!!");
+	if(shotsTaken >= MAX_SCORE) {
+		if(score >= MAX_SCORE) {
+			alert("YOU WIN!!");
+		} else {
+			alert("YOU LOSE, made " + score + " out of " + MAX_SCORE + " shots!");
+		}
 	}
 
 }
@@ -696,6 +702,15 @@ var upTime = 0;
 update = function() {
     requestAnimationFrame( update );
     renderer.render( scene, camera );
+	
+	// Add swag
+	upTime++;
+	big_ball.rotateX(Math.PI/30);
+	if(upTime % 16 == 0) {
+		textMesh.position.y += 50;
+	} else {
+		textMesh.position.y = 0;
+	}
 	
 	managePowerbar();
 	
