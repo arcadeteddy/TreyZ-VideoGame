@@ -184,6 +184,11 @@ var up_distance = 0;
 var forward_distance = 0;
 var ball_radius=14;
 var CollidingBoard =false;
+var scoreY = 215;
+var scoreX1 = 582;
+var scoreX2 = 600;
+var score = 0;
+var scored =false;
 
 // Declare Stage objects 
 var hand = new THREE.Object3D();
@@ -350,7 +355,7 @@ loader.load('obj/ball.json', function( geometry, materials ) {
 var ballz_material = new THREE.MeshBasicMaterial( {color: 0xff0000} );
 var ballz = new THREE.SphereGeometry(2, 64, 64);
 var baller = new THREE.Mesh( ballz, ballz_material );
-baller.position.y += 220;
+baller.position.y += 215;
 baller.position.x += 583;
  scene.add( baller );
 ground = baller.position.y;
@@ -363,7 +368,7 @@ function shoot (forceX,angle ){
 	//forceX determined by drag distance
 	//angle determined by angle of ball
 	if(shootingOn) {
-		// forceX = 10.5;//todo////////////force of ball for testing
+		// forceX = 11.3;//todo////////////force of ball for testing
 		ball_forward = forceX * Math.cos(angle);
 		ball_forward = Math.abs(ball_forward);
 		ball_up = forceX * Math.sin(angle);
@@ -388,6 +393,7 @@ function bounceGround(){
 	ball_forward =  (ball_forward * (0.98 - 0.004 * NumOfBounces));
 	NumOfBounces++;
 	CollidingBoard =false;
+	scored = false;
 }
 
 function bounceBack(){
@@ -446,6 +452,30 @@ function boardCollision3(X, Y){
 	}else{
 		return false;
 	}
+}
+
+function checkScore(){
+	var X = ball_test.position.x;
+	var Y = ball_test.position.y;
+
+	if(scoreX1 <= (X+ball_radius) && scoreX1 >= (X-ball_radius) && scoreY <= (Y+ball_radius) && scoreY >= (Y-ball_radius) ){
+		if(score==false) {
+			score++;
+			alert("score!!!");
+		}
+		scored=true;
+	}
+
+	if(scoreX2 <= (X+ball_radius) && scoreX2 >= (X-ball_radius) && scoreY <= (Y+ball_radius) && scoreY >= (Y-ball_radius) ){
+		if(score==false) {
+			score++;
+			alert("score!!!");
+		}
+		scored=true;
+	}
+
+
+
 }
 
 function checkCollision(){
@@ -620,8 +650,8 @@ function onKeyDown(event){
 	if(keyboard.pressed("u") )
 	{
 
-		//alert("x is " + baller.position.x + "--------z is " + baller.position.z);
-		alert("x is " + ball_test.position.x + "--------y is " + ball_test.position.y);
+		alert("x is " + baller.position.x + "--------z is " + baller.position.z);
+		//alert("x is " + ball_test.position.x + "--------y is " + ball_test.position.y);
 
 	}
 
@@ -659,6 +689,7 @@ update = function() {
 			bounceGround();
 		}
 		checkCollision();
+		checkScore();
 
 		if(NumOfBounces >= 50){
 			shooter = false;
