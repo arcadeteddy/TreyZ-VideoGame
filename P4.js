@@ -485,19 +485,21 @@ function checkScore(){
 	var Y = ball_test.position.y;
 
 	if(scoreX1 <= (X+ball_radius) && scoreX1 >= (X-ball_radius) && scoreY <= (Y+ball_radius) && scoreY >= (Y-ball_radius) ){
-		if(score==false) {
+		if(scored==false) {
 			score++;
+			scored=true;
 			//alert("score!!!");
 		}
-		scored=true;
+
 	}
 
 	if(scoreX2 <= (X+ball_radius) && scoreX2 >= (X-ball_radius) && scoreY <= (Y+ball_radius) && scoreY >= (Y-ball_radius) ){
-		if(score==false) {
+		if(scored==false) {
 			score++;
+			scored=true;
 			//alert("score!!!");
 		}
-		scored=true;
+
 	}
 
 	if(score >= MAX_SCORE) {
@@ -698,7 +700,7 @@ update = function() {
 	managePowerbar();
 	
 	if (shooter) {
-		if(ball_angle >= 0){
+		if(ball_angle > 0){
 		hand.rotateX(0.1);
 		ball_angle -= 0.1;
 		}
