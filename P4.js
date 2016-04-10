@@ -168,11 +168,15 @@ var forward_distance = 0;
 var ball_radius=14;
 var CollidingBoard =false;
 
-// Declare objects 
+// Declare Stage objects 
 var hand = new THREE.Object3D();
 var backboard = new THREE.Object3D();
 var backboard2 = new THREE.Object3D();
 var ball = new THREE.Object3D();
+
+// Declare background objects
+var bench = new THREE.Object3D();
+
 
 // Build loader
 var loader = new THREE.JSONLoader();
@@ -240,6 +244,44 @@ loader.load('obj/backboard.json', function( geometry, materials ) {
 	scene.add(backboard2);
 });
 
+// Load bench
+loader.load( 'obj/bench-tex.json', function( geometry, materials ) {
+	// Make callback
+	var benches = [];
+	// background benches
+	bench = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ));
+	var bench2 = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ));
+	var bench3 = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ));
+	// Foreground benches
+	var bench4 = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ));
+	var bench5 = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ));
+	var bench6 = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ));
+	benches.push(bench, bench2, bench3, bench4, bench5, bench6);
+	
+	// Scale bench to correct size
+	var b;
+	for(b = 0; b < benches.length; b++) {
+		benches[b].scale.multiplyScalar(10);
+		benches[b].position.y += 31;
+		benches[b].rotation.y = -Math.PI/2;
+		if (b < benches.length/2) { benches[b].position.z -= 350 } else { benches[b].position.z += 350;}
+	}
+	// Position bench in scene
+	bench.position.x += 100;
+	bench2.position.x += 350;
+	bench3.position.x += 600;
+	
+	bench4.position.x += 100;
+	bench5.position.x += 350;
+	bench6.position.x += 600;
+	
+	// Add to scene
+	for(b = 0; b < benches.length; b++) {
+		scene.add(benches[b]);
+	}
+
+});
+
 // Load ball
 loader.load('obj/ball.json', function( geometry, materials ) {
 	// Make callback
@@ -248,10 +290,6 @@ loader.load('obj/ball.json', function( geometry, materials ) {
 	ball.scale.multiplyScalar(1/8);
 	// Position
 	ball.position.y += 25;
-	//////////
-	//ball.position.y = 275;
-	//ball.position.x = 601;
-
 
 	ball_test = ball;
 //	var helper = new THREE.BoundingBoxHelper(ball, 0xff0000);
@@ -281,14 +319,14 @@ function shoot (forceX,angle ){
 	//forceX determined by drag distance
 	//angle determined by angle of ball
 	if(shootingOn) {
-		forceX = 11.3;//todo////////////force of ball for testing
+		//forceX = 11.3;//todo////////////force of ball for testing
 		ball_forward = forceX * Math.cos(angle);
 		ball_forward = Math.abs(ball_forward);
 		ball_up = forceX * Math.sin(angle);
 		ball_up = Math.abs(ball_up);
 		shooter = true;
 		Vfinal = -ball_up;
-		ball_angle = 0;
+		//ball_angle = 0;
 	}
 
 }
@@ -366,7 +404,7 @@ function checkCollision(){
 	var NyUp = Math.sin(3.92) * ball_radius;
 	var NxDown = Math.cos(5.45) * ball_radius;
 	var NyDown = Math.sin(5.45) * ball_radius;
-
+	
 
 	if(CollidingBoard == false) {
 		 if (boardCollision2(X + DxDown, Y + DyDown)) {
@@ -388,6 +426,60 @@ function checkCollision(){
 
 	//0.78  2.356   3.92   5.45
 
+}
+
+//====================== Power Bar ===============================================
+// Setup power bar window
+var powbar_geom = new THREE.BoxGeometry(100, 20, 2);
+var powbar_dim_mat = new THREE.MeshBasicMaterial( {color: 0xb8740a});
+var powbar_lit_mat = new THREE.MeshBasicMaterial( {color: 0xff9e0a});
+var powbar = new THREE.Mesh( powbar_geom, powbar_dim_mat );
+
+var border_geom = new THREE.BoxGeometry(105, 25, 1.5);
+var border_dim_mat = new THREE.MeshBasicMaterial( {color: 0x000000});
+var border_lit_mat = new THREE.MeshBasicMaterial( {color: 0xfdff10});
+var border = new THREE.Mesh( border_geom, border_dim_mat);
+
+var power_indicator_geom = new THREE.BoxGeometry(0.1, 5, 2.5);
+var power_indicator_mat = new THREE.MeshBasicMaterial( {color: 0x37ec27});
+var power_indicator_bad_mat = new THREE.MeshBasicMaterial( {color: 0xdb0b00});
+var power_indicator = new THREE.Mesh( power_indicator_geom, power_indicator_mat);
+
+var gauge_geom = new THREE.BoxGeometry(80, 5, 2.3);
+var gauge_mat = new THREE.MeshBasicMaterial( {color: 0x7c5100});
+var gauge = new THREE.Mesh( gauge_geom, gauge_mat );
+powbar.add(border);
+powbar.add(power_indicator);
+powbar.add(gauge);
+scene.add(powbar);
+camera.add(powbar);
+
+// Orient power bar in window
+powbar.translateX(-22);
+powbar.translateY(105);
+powbar.translateZ(-200);
+
+// Update power bar
+var incrementer = 1;
+function managePowerbar() {
+	if (shootingOn) {
+		powbar.material = powbar_lit_mat;
+		border.material = border_lit_mat;
+	} else {
+		powbar.material = powbar_dim_mat;
+		border.material = border_dim_mat;
+	}
+	
+	if (incrementer > 800) {
+		power_indicator.material = power_indicator_bad_mat;
+	} else {
+		power_indicator.material = power_indicator_mat;
+	}
+	
+	if (incrementer >= 1000) {
+		incrementer = 1000;
+	}
+	power_indicator.scale.setX(incrementer);
 }
 
 //====================== Player controls =========================================
@@ -416,6 +508,16 @@ function onKeyDown(event){
 		shootingOn = !shootingOn;
 	}
 
+	if(keyboard.pressed("z") && !shooter)
+	{
+
+		ball_test.position.x =0;
+		ball_test.position.z =0;
+	}
+
+
+
+
 }
 keyboard.domElement.addEventListener('keydown', onKeyDown );
 
@@ -425,7 +527,9 @@ var upTime = 0;
 update = function() {
     requestAnimationFrame( update );
     renderer.render( scene, camera );
-
+	
+	managePowerbar();
+	
 	if (shooter) {
 		if(ball_angle >= 0){
 		hand.rotateX(0.1);
@@ -446,26 +550,22 @@ update = function() {
 			bounceGround();
 		}
 		checkCollision();
-		//if(forward_distance >300){
-		//	var x = ball_test.position.x;
-		//	var y = ball_test.position.y;
-		//	boardCollision(x,y );
-		//}
-
-		//if(boardCollision(ball_test.position.x, ball_test.position.y)){
-		//	bounceBack();
-		//}
 
 		if(NumOfBounces >= 50){
 			shooter = false;
 			ball_forward = 0;
 			ball_up = 0;
 			NumOfBounces=0;
+
+
 			//ball_angle = 0;
 		}
 	}
-	if (mousedown && dragTime < 500){
+	if (mousedown && dragTime < 500) {
 		dragTime++;
+		if (shootingOn) {
+		incrementer+= 10.95;
+		}
 	}else{
 		dragTime = 0;
 	}
