@@ -174,7 +174,7 @@ loader.load('obj/rack.json', function( geometry, materials ) {
 
 
 // Load backboard + net
-loader.load('obj/backboard.json', function( geometry, materials ) {
+loader.load('obj/backboardcoloured.json', function( geometry, materials ) {
 	// Make callback
 	backboard = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ));
 	backboard2 = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ));
