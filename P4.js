@@ -61,8 +61,23 @@ var grid = new THREE.Line(gridGeometry,gridMaterial,THREE.LinePieces);
 
 // ENVIRONMENT
 initScene = function() {
+
     var ambientLight = new THREE.AmbientLight( 0xAFAFAF );
     scene.add( ambientLight );
+	
+	// create a point light 
+	pointLight = new THREE.PointLight(0xffc9c9); 
+ 
+	// set its position 
+	pointLight.position.x = 0; 
+	pointLight.position.y = 150; 
+	pointLight.position.z = 0; 
+	pointLight.intensity = 1.8; 
+	pointLight.distance = 10000; 
+ 
+	// add to the scene 
+	scene.add(pointLight); 
+	
 
     var spotLight = new THREE.SpotLight( 0xffffee );
     spotLight.position.set( 0, 1000, 0 );
@@ -84,12 +99,14 @@ initScene = function() {
 	var floorMaterial = new THREE.MeshPhongMaterial( { map: floorTexture, bumpMap: THREE.ImageUtils.loadTexture('images/concrete_floor_bump.png'), shininess: 1, bumpScale: 2.5 } );
 	var floor = new THREE.Mesh( floorGeometry, floorMaterial );
 	floor.rotateX(-90 * Math.PI / 180);
+	floor.receiveShadow = true;
 	scene.add( floor );
 	var otherFloorGeometry = new THREE.BoxGeometry( 1600, 620, 40 );
     var otherFloorTexture = THREE.ImageUtils.loadTexture( "images/other_floor.png" );
     var otherFloorMaterial = new THREE.MeshPhongMaterial( { map: otherFloorTexture, bumpMap: THREE.ImageUtils.loadTexture('images/concrete_floor_bump.png'), shininess: 1, bumpScale: 2.5 } );
     var otherFloor = new THREE.Mesh( otherFloorGeometry, otherFloorMaterial );
     otherFloor.rotateX(-90 * Math.PI / 180); otherFloor.translateY(800);
+	otherFloor.receiveShadow = true;
     scene.add( otherFloor );
 
     var buildingGeometry = new THREE.BoxGeometry( 1700, 1700, 1700 );
@@ -260,6 +277,8 @@ loader.load( 'obj/bench-tex.json', function( geometry, materials ) {
 
 	// Make Callback
 	var benches = [];
+	materials[0].shading = THREE.PhongShading;
+	geometry.shading = THREE.PhongShading;
 	var bench1 = new THREE.Mesh( geometry, woodMaterial );
 	var bench2 = new THREE.Mesh( geometry, woodMaterial );
 	var bench3 = new THREE.Mesh( geometry, woodMaterial );
@@ -278,6 +297,8 @@ loader.load( 'obj/bench-tex.json', function( geometry, materials ) {
 	// Scale Benches
 	var b;
 	for(b = 0; b < benches.length; b++) {
+		benches[b].castShadow = true;
+		benches[b].receiveShadow = true;
 		benches[b].scale.multiplyScalar(10);
 		benches[b].position.y += 50;
 		benches[b].rotation.y = -Math.PI/2;
@@ -341,7 +362,7 @@ function shoot (forceX,angle ){
 	//forceX determined by drag distance
 	//angle determined by angle of ball
 	if(shootingOn) {
-		forceX = 10.5;//todo////////////force of ball for testing
+		// forceX = 10.5;//todo////////////force of ball for testing
 		ball_forward = forceX * Math.cos(angle);
 		ball_forward = Math.abs(ball_forward);
 		ball_up = forceX * Math.sin(angle);
