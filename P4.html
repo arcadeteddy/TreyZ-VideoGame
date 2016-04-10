@@ -6,23 +6,22 @@
       body { margin: 0; 
 			 background-color: black;
 			 z-index: 1;} 
-	  scoreboard { text-align: center;
+	  #scoreboard { text-align: center; position: fixed; top: 0px; left: 0px; width: 250px; background: rgba(5, 100, 5, .75); padding: 20px; margin: 20px;
 				   font-family: Segoe UI, Helvetica, Ubuntu, sans-serif; color: white;
 				   z-index: 1;}
-	  scores { font-size: 100%
+	  #scores { font-size: 100%
 			   padding:0;
 			   margin:0;
 			   color: white;
 			   z-index: 1;
 			   }
-	  title { background-color: white;
+	  #title { background-color: white;
 			  color: black; 
 			  z-index: 1;}
-	  canvas { width: 100%; height: 100%; z-index: -1000;}
+	  #canvas { width: 100%; height: 100%; z-index: -1000;}
     </style>
   </head>
-  <body>
-    <div id="canvas"></div>
+    <div style="z-index:-1000;"><div id="canvas"></div></div>
     <script type="text/javascript" src="js/three.min.js"></script>
     <script type="text/javascript" src="js/OBJLoader.js"></script>
     <script type="text/javascript" src="js/SourceLoader.js"></script>
@@ -33,11 +32,11 @@
 	<div id='scoreboard'> 
 		<h1 id='scores'>0 / 25</h1> 
 		<h1 id='title'>TREYZ!</h1> 
-		<h3>Q - Enter/Exit Shooting mode 
+		<h3>Q - Enter/Exit Shooting Mode
 			<h4> In shooting mode, press and hold the left mouse button
 				 then time your release! </h4>
-		<br>W - Change angle of shot
-		<br>Z - Reset shot</h3> 
+		<br>W - Change Angle (Up)
+		<br>Z - Reset Shot</h3>
 	</div> 
 </body>
 </html>
