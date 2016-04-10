@@ -22,18 +22,18 @@ var ASPECT = 1;
 var NEAR = 0.1;
 var FAR = 5000;
 var camera = new THREE.PerspectiveCamera(VIEW_ANGLE,ASPECT,NEAR,FAR);
-camera.position.set(0,250,450);
+camera.position.set(300,250,640);
 scene.add( camera );
 
 // SETUP ORBIT CONTROLS OF THE CAMERA
-var controls = new THREE.OrbitControls(camera);
+// var controls = new THREE.OrbitControls(camera);
 
 // ADAPT TO WINDOW RESIZE
 function resize() {
     renderer.setSize(SCREEN_WIDTH,SCREEN_HEIGHT);
     camera.aspect = SCREEN_WIDTH/SCREEN_HEIGHT;
     camera.updateProjectionMatrix();
-	camera.lookAt(new THREE.Vector3(0,0,0));
+	camera.lookAt(new THREE.Vector3(300,0,0));
 }
 
 // EVENT LISTENER RESIZE
@@ -203,6 +203,7 @@ var scoreX1 = 582;
 var scoreX2 = 600;
 var score = 0;
 var scored =false;
+var MAX_SCORE = 25;
 
 // Declare Stage objects 
 var hand = new THREE.Object3D();
@@ -372,13 +373,6 @@ loader.load('obj/ball.json', function( geometry, materials ) {
 	ball.position.y += 35;
 
 	ball_test = ball;
-//	var helper = new THREE.BoundingBoxHelper(ball, 0xff0000);
-//	helper.update();
-//// If you want a visible bounding box
-//	scene.add(helper);
-//// If you just want the numbers
-//	min = helper.box.min.z;
-//	max = helper.box.max.y;
 
 	// Add to scene
 	scene.add(ball);
@@ -493,7 +487,7 @@ function checkScore(){
 	if(scoreX1 <= (X+ball_radius) && scoreX1 >= (X-ball_radius) && scoreY <= (Y+ball_radius) && scoreY >= (Y-ball_radius) ){
 		if(score==false) {
 			score++;
-			alert("score!!!");
+			//alert("score!!!");
 		}
 		scored=true;
 	}
@@ -501,12 +495,14 @@ function checkScore(){
 	if(scoreX2 <= (X+ball_radius) && scoreX2 >= (X-ball_radius) && scoreY <= (Y+ball_radius) && scoreY >= (Y-ball_radius) ){
 		if(score==false) {
 			score++;
-			alert("score!!!");
+			//alert("score!!!");
 		}
 		scored=true;
 	}
 
-
+	if(score >= MAX_SCORE) {
+		alert("YOU WIN!!");
+	}
 
 }
 
