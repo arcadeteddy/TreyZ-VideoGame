@@ -109,6 +109,20 @@ initScene = function() {
 	otherFloor.receiveShadow = true;
     scene.add( otherFloor );
 
+    var ballGeometry = new THREE.SphereGeometry(200, 64, 64);
+    var ballTexture = THREE.ImageUtils.loadTexture( "images/basketball.jpg" );
+    var ballMaterial = new THREE.MeshPhongMaterial( { map: ballTexture } );
+    ball = new THREE.Mesh( ballGeometry, ballMaterial );
+    ball.position.y += 50; ball.rotateX(45 * Math.PI / 180); ball.translateX(-400);
+    otherFloor.add( ball );
+
+
+    var material = new THREE.MeshPhongMaterial({ map: ballTexture });
+    var textGeom = new THREE.TextGeometry( 'TREYZ!', { font: 'copperplate t', size: 120, weight: 'normal' });
+    var textMesh = new THREE.Mesh( textGeom, material );
+    textMesh.position.set( 0, 0, 20 ); textMesh.rotateX(90 * Math.PI / 180);
+    otherFloor.add( textMesh );
+
     var buildingGeometry = new THREE.BoxGeometry( 1700, 1700, 1700 );
     var buildingTexture = THREE.ImageUtils.loadTexture( "images/concrete_side.png" );
     buildingTexture.wrapS = buildingTexture.wrapT = THREE.RepeatWrapping;
@@ -234,10 +248,10 @@ loader.load('obj/rack.json', function( geometry, materials ) {
 	// Position rack 
 	rack0.position.y += 20;
 	rack0.position.x -= 20;
-	rack0.position.z -= 100;
+	rack0.position.z -= 150;
 	rack1.position.y += 20;
 	rack1.position.x -= 20;
-	rack1.position.z += 100;
+	rack1.position.z += 150;
 	//rack1.position.x -= 55;
 	//rack1.position.z -= 90;
 	// Orient rack
@@ -246,6 +260,24 @@ loader.load('obj/rack.json', function( geometry, materials ) {
 	// Add to scene
 	scene.add(rack0);
 	scene.add(rack1);
+
+	for (var i = 0; i < 5; i++) {
+        var ballGeometry = new THREE.SphereGeometry(1.425, 64, 64);
+        var ballTexture = THREE.ImageUtils.loadTexture( "images/basketball.jpg" );
+        var ballMaterial = new THREE.MeshPhongMaterial( { map: ballTexture } );
+        ball = new THREE.Mesh( ballGeometry, ballMaterial );
+        ball.position.y += 4; ball.position.x += i*2.85-5.75;
+        rack0.add( ball );
+	}
+
+	for (var i = 1; i < 5; i++) {
+        var ballGeometry = new THREE.SphereGeometry(1.425, 64, 64);
+        var ballTexture = THREE.ImageUtils.loadTexture( "images/basketball.jpg" );
+        var ballMaterial = new THREE.MeshPhongMaterial( { map: ballTexture } );
+        ball = new THREE.Mesh( ballGeometry, ballMaterial );
+        ball.position.y += 4; ball.position.x += i*2.85-5.75;
+        rack1.add( ball );
+	}
 });
 
 
