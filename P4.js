@@ -369,8 +369,10 @@ function shoot (forceX,angle ){
 		ball_up = forceX * Math.sin(angle);
 		ball_up = Math.abs(ball_up);
 		shooter = true;
+		incrementer = 0;
 		Vfinal = -ball_up;
 		//ball_angle = 0;
+		shootingOn = false;
 	}
 
 }
