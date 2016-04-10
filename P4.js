@@ -412,6 +412,9 @@ function shoot (forceX,angle ){
 		Vfinal = -ball_up;
 		//ball_angle = 0;
 		shootingOn = false;
+		shotsTaken++;
+		var remainingShots = MAX_SCORE - shotsTaken;
+		document.getElementById("shots").innerHTML = "Shots remaining: " + remainingShots;
 	}
 
 }
