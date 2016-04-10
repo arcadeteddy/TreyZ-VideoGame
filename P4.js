@@ -350,7 +350,7 @@ function bounceGround(){
 function bounceBack(){
 	ball_forward = -(ball_forward * 0.6 + Math.abs(ball_up * 0.4));
 	ball_up = 0.9 * ball_up;
-	//CollidingBoard =true;
+	//CollidingBoard =true;/
 }
 
 function bounceRim(){
