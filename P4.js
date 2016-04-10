@@ -164,9 +164,11 @@ loader.load('obj/rack.json', function( geometry, materials ) {
 	rack1.position.y += 10;
 	rack1.position.x -= 20;
 	rack1.position.z += 100;
+	//rack1.position.x -= 55;
+	//rack1.position.z -= 90;
 	// Orient rack
-	rack0.rotation.y = Math.PI/8;
-	rack1.rotation.y = -Math.PI/8;
+	  rack0.rotation.y = Math.PI/8;
+	  rack1.rotation.y = -Math.PI/8;
 	// Add to scene
 	scene.add(rack0);
 	scene.add(rack1);
@@ -252,11 +254,12 @@ loader.load('obj/ball.json', function( geometry, materials ) {
 	scene.add(ball);
 });
 
-var ballz_material = new THREE.MeshBasicMaterial( {color: 0x828224} );
-var ballz = new THREE.SphereGeometry(12.5, 64, 64);
+var ballz_material = new THREE.MeshBasicMaterial( {color: 0xff0000} );
+var ballz = new THREE.SphereGeometry(2, 64, 64);
 var baller = new THREE.Mesh( ballz, ballz_material );
-baller.position.y += 16;
-// scene.add( baller );
+baller.position.y += 220;
+baller.position.x += 583;
+ scene.add( baller );
 ground = baller.position.y;
 
 //====================== PHYSICS =========================================
@@ -267,7 +270,7 @@ function shoot (forceX,angle ){
 	//forceX determined by drag distance
 	//angle determined by angle of ball
 	if(shootingOn) {
-		//forceX = 11.3;//todo////////////force of ball for testing
+		forceX = 10.5;//todo////////////force of ball for testing
 		ball_forward = forceX * Math.cos(angle);
 		ball_forward = Math.abs(ball_forward);
 		ball_up = forceX * Math.sin(angle);
@@ -295,13 +298,19 @@ function bounceGround(){
 function bounceBack(){
 	ball_forward = -(ball_forward * 0.6 + Math.abs(ball_up * 0.4));
 	ball_up = 0.9 * ball_up;
-	CollidingBoard =true;
+	//CollidingBoard =true;
+}
+
+function bounceRim(){
+	ball_forward = -(ball_forward * 0.6 + Math.abs(ball_up * 0.4));
+	ball_up = 0.1 * ball_up;
+	//CollidingBoard =true;
 }
 
 function bounceUp(X){
 	ball_forward = -(ball_forward * 0.6 + Math.abs(ball_up * 0.4)) * 0.1;
 	ball_up = Math.abs( ball_forward * 0.6 + Math.abs(ball_up * 0.73));
-	CollidingBoard =true;
+	//CollidingBoard =true;
 	//alert("UPPPPPPPP");
 	//alert(X);
 }
@@ -329,6 +338,11 @@ function boardCollision2(X, Y){
 	}
 }
 
+function rackCollision(Xf, Xb, Zf, Zb){
+
+
+}
+
 function boardCollision3(X, Y){
 
 	if(X >= 632 && X < 638 && Y >= 165 && Y <= 300){ ///todo//////////
@@ -352,16 +366,35 @@ function checkCollision(){
 	var NyUp = Math.sin(3.92) * ball_radius;
 	var NxDown = Math.cos(5.45) * ball_radius;
 	var NyDown = Math.sin(5.45) * ball_radius;
-	
+	//baller.position.y += 220;
+	//baller.position.x += 583;
+	if(CollidingBoard){
+		if((Y-ball_radius)>=219 && (Y-ball_radius)<=224 &&  X<=575 && X>=569  ){//(X<=588 && 232 238
+			bounceUp();
+			alert(X);
+			alert(Y);
+			CollidingBoard = false;
+		}
+	}
 
-	if(CollidingBoard == false) {
+
+		if(CollidingBoard == false) {
+		if((Y-ball_radius)>=230 && (Y-ball_radius)<=235 && (X+ball_radius)<=585 && (X+ball_radius)>=563){
+			//alert(X);
+			//alert(Y);
+			//bounceBack();
+			bounceRim();
+		}
 		 if (boardCollision2(X + DxDown, Y + DyDown)) {
 			bounceUp(X + DxDown);
+			 CollidingBoard = true;
 		} else if (boardCollision3(X + DxUp, Y - DyUp)) {
 
 			bounceUp(X + DxDown);
+			 CollidingBoard = true;
 		}else if (boardCollision(X, Y )) {
 			bounceBack();
+			 CollidingBoard = true;
 		}
 
 		//else if (boardCollision(X + NxUp, Y + NyUp)) {
@@ -369,10 +402,13 @@ function checkCollision(){
 		//} else if (boardCollision(X + NxDown, Y + NyDown)) {
 		//	bounceGround();
 		//}
+
+
 	}
 
 
-	//0.78  2.356   3.92   5.45
+
+
 
 }
 
@@ -462,7 +498,37 @@ function onKeyDown(event){
 		ball_test.position.x =0;
 		ball_test.position.z =0;
 	}
+	if(keyboard.pressed("t") && !shooter)
+	{
 
+		baller.position.x -=1;
+
+	}
+	if(keyboard.pressed("g") && !shooter)
+	{
+
+		baller.position.x +=1;
+
+	}
+	if(keyboard.pressed("f") && !shooter)
+	{
+
+		baller.position.z +=1;
+
+	}
+	if(keyboard.pressed("h") && !shooter)
+	{
+
+		baller.position.z -=1;
+
+	}
+	if(keyboard.pressed("u") )
+	{
+
+		//alert("x is " + baller.position.x + "--------z is " + baller.position.z);
+		alert("x is " + ball_test.position.x + "--------y is " + ball_test.position.y);
+
+	}
 
 
 
